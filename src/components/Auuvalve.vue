@@ -7,24 +7,20 @@
     <v-list-item dense>
       <v-row align="center" dense>
         <v-col cols="6">
-          <!-- <v-checkbox v-model="rpdvalve" hide-details label="Регулятор перепада"></v-checkbox> -->
           <v-switch
             class="mt-0"
             v-model="rpdvalve"
             label="Регулятор перепада"
             color="info"
-            value="info"
             hide-details
           ></v-switch>
         </v-col>
         <v-col cols="6">
-          <!-- <v-checkbox v-model="rdsvalve" hide-details label="Регулятор до себя"></v-checkbox> -->
           <v-switch
             class="mt-0"
             v-model="rdsvalve"
-            label="Регулятор до себя"
+            label="Регулятор до себя (балансировочный клапан)"
             color="info"
-            value="info"
             hide-details
           ></v-switch>
         </v-col>
@@ -44,7 +40,6 @@
 </template>
 <script>
 import { mapState } from "vuex";
-
 import RegValve from "@/components/Regvalve.vue";
 import RpdValve from "@/components/Rpdvalve.vue";
 import RdsValve from "@/components/Rdsvalve.vue";
@@ -66,12 +61,31 @@ export default {
   computed: {
     ...mapState({
       isx: state => state.isx,
-      check: state => state.check,
-      cl_R: state => state.cl_R,
-      cl_P: state => state.cl_P
+      cl_P: state => state.cl_P,
+      cl_D: state => state.cl_D
     })
   },
-  watch: {},
+  watch: {
+    rpdvalve() {
+      this.cl_P.enable = this.rpdvalve;
+      this.$store.dispatch("CL_PER", this.cl_P);
+    },
+    rdsvalve() {
+      this.cl_D.enable = this.rdsvalve;
+      this.$store.dispatch("CL_DOS", this.cl_D);
+    }
+    //   deep: true
+    // },
+
+    // cl_D: {
+    //   handler() {
+    //     this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
+    //     this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs);
+    //     this.$store.dispatch("CL_DOS", this.cl_D);
+    //   },
+    //   deep: true
+    // }
+  },
   methods: {}
 };
 </script>

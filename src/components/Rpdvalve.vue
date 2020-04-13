@@ -19,7 +19,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_P.dP"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -36,7 +35,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_P.Kv"
           ></v-text-field>
         </v-col>
@@ -50,7 +48,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_P.Kvs"
             @change="change_clp"
           ></v-text-field>
@@ -65,7 +62,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             readonly
             v-model.number="cl_P.dP_f"
           ></v-text-field>
@@ -98,8 +94,8 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             v-model="cl_P.diap"
+            @change="change_clp"
           ></v-text-field>
         </v-col>
 
@@ -130,7 +126,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             clearable
             v-model="cl_P.naim"
           ></v-text-field>
@@ -145,7 +140,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             v-model="cl_P.obozn"
             @change="change_clp"
           ></v-text-field>
@@ -208,7 +202,7 @@ export default {
 <style scoped>
 .inputD {
   /* padding: 0; */
-  /* font-size: 0.9em; */
+  font-size: 0.95em;
   font-weight: bold;
 }
 

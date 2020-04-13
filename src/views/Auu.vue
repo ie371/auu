@@ -5,21 +5,25 @@
       <v-col md="3">
         <auu-isx></auu-isx>
       </v-col>
-      <v-col md="6">
-        <auu-podbor></auu-podbor>
+      <v-col md="5">
+        <auu-valve></auu-valve>
       </v-col>
-      <v-col md="3"></v-col>
+      <v-col md="4">
+        <auu-taps></auu-taps>
+      </v-col>
     </v-row>
   </v-flex>
   <!-- </v-container> -->
 </template>
 <script>
 import AuuIsx from "@/components/Auuisx.vue";
-import AuuPodbor from "@/components/Auupodbor.vue";
+import AuuValve from "@/components/Auuvalve.vue";
+import AuuTaps from "@/components/Auutaps.vue";
 export default {
   components: {
     AuuIsx,
-    AuuPodbor
+    AuuValve,
+    AuuTaps
   },
   data() {
     return {};

@@ -23,9 +23,10 @@ export default new Vuex.Store({
       u: "",
       duT1: "",
       duT11: "",
+      duT3: "",
       v1: "",
       v2: "",
-      spr: ""
+      resis: ""
     },
     cl_R: {
       dP: 0.5,
@@ -41,6 +42,7 @@ export default new Vuex.Store({
       obozn_priv: ""
     },
     cl_P: {
+      enable: false,
       dP: 0.5,
       Kv: "",
       Kvs: "",
@@ -52,6 +54,8 @@ export default new Vuex.Store({
       dP_f: ""
     },
     cl_D: {
+      enable: false,
+      balans: false,
       dP: 0.5,
       Kv: "",
       Kvs: "",
@@ -74,8 +78,10 @@ export default new Vuex.Store({
       firms: "",
       du: "",
       naim: "",
-      obozn: ""
-    }
+      obozn: "",
+      taps: false
+    },
+    spec: []
   },
   modules: {},
   getters: {},
@@ -97,6 +103,12 @@ export default new Vuex.Store({
     },
     mu_pumps(state, payload) {
       state.pumps = payload;
+    },
+    mu_spec(state, payload) {
+      state.spec = payload;
+    },
+    mu_spec_rem(state, payload) {
+      state.spec = [];
     }
   },
   actions: {
@@ -117,6 +129,12 @@ export default new Vuex.Store({
     },
     PUMPS(context, payload) {
       context.commit("mu_pumps", payload);
+    },
+    SPEC(context, payload) {
+      context.commit("mu_spec", payload);
+    },
+    SPEC_REM(context, payload) {
+      context.commit("mu_spec_rem");
     }
   }
 });

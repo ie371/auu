@@ -151,6 +151,15 @@
             @change="change_pump"
           ></v-select>
         </v-col>
+        <v-col cols="4">
+          <v-switch
+            class="mt-0"
+            v-model="pumps.taps"
+            label="Обвязка кранами"
+            color="deep-orange "
+            hide-details
+          ></v-switch>
+        </v-col>
       </v-row>
     </v-list-item>
 
@@ -239,6 +248,7 @@ export default {
         );
 
         this.$store.dispatch("PUMPS", this.pumps);
+        this.$store.dispatch("SPEC_REM");
       },
       deep: true
     }
@@ -273,8 +283,10 @@ export default {
 
 <style scoped>
 .inputD {
-  /* padding: 0; */
-  /* font-size: 0.9em; */
+  /* padding: 0;
+  transform: scale(0.875);
+  transform-origin: left; */
+  font-size: 0.95em;
   font-weight: bold;
 }
 

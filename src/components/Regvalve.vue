@@ -21,7 +21,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_R.dP"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -38,7 +37,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_R.Kv"
           ></v-text-field>
         </v-col>
@@ -52,7 +50,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model.number="cl_R.Kvs"
             @change="change_clp"
           ></v-text-field>
@@ -67,7 +64,6 @@
             class="inputD"
             type="number"
             hide-details
-            valid
             readonly
             v-model.number="cl_R.dP_f"
           ></v-text-field>
@@ -132,7 +128,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             clearable
             v-model="cl_R.naim_cl"
           ></v-text-field>
@@ -147,7 +142,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             v-model="cl_R.obozn_cl"
             @change="change_clp"
           ></v-text-field>
@@ -166,7 +160,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             v-model="cl_R.naim_priv"
           ></v-text-field>
         </v-col>
@@ -180,7 +173,6 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             v-model="cl_R.obozn_priv"
             @change="change_clp"
           ></v-text-field>
@@ -257,7 +249,7 @@ export default {
 <style scoped>
 .inputD {
   /* padding: 0; */
-  /* font-size: 0.9em; */
+  font-size: 0.95em;
   font-weight: bold;
 }
 

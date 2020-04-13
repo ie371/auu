@@ -70,6 +70,17 @@
             v-model.number="cl_D.dP_f"
           ></v-text-field>
         </v-col>
+
+        <v-col cols="4">
+          <v-switch
+            class="mt-0"
+            v-model="cl_D.balans"
+            label="Баланс. клапан"
+            color="orange"
+            hide-details
+            @change="change_clp"
+          ></v-switch>
+        </v-col>
       </v-row>
     </v-list-item>
 
@@ -193,13 +204,18 @@ export default {
   },
   methods: {
     change_clp() {
-      let n = "Регулятор давления 'до себя' ";
-      let diap = this.cl_D.diap;
+      let n;
+      let x;
+      this.cl_D.balans
+        ? ((n = "Клапан балансировочный "), (x = ""))
+        : ((n = "Регулятор давления 'до себя' "),
+          (x = ", диапазон " + this.cl_D.diap + " бар"));
+
+      // let diap = this.cl_D.diap;
       let f = this.cl_D.firms;
       let d = this.cl_D.du;
       let k = this.cl_D.Kvs;
-      this.cl_D.naim =
-        n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч, диапазон " + diap + " бар";
+      this.cl_D.naim = n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч" + x;
     }
   }
 };
@@ -208,7 +224,7 @@ export default {
 <style scoped>
 .inputD {
   /* padding: 0; */
-  /* font-size: 0.9em; */
+  font-size: 0.95em;
   font-weight: bold;
 }
 

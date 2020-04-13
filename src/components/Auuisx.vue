@@ -57,7 +57,7 @@
             type="number"
             hide-details
             valid
-            v-model="check.spr"
+            v-model="check.resis"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="8"
@@ -309,6 +309,36 @@
       </v-row>
     </v-list-item>
 
+    <v-list-item dense>
+      <v-row align="center" justify="space-between" dense>
+        <v-col cols="5">
+          <v-select
+            dense
+            filled
+            outlined
+            hide-details
+            :items="DU"
+            label="ДуТ3"
+            class="inputD"
+            v-model="check.duT3"
+          ></v-select>
+        </v-col>
+        <v-col cols="5">
+          <v-text-field
+            dense
+            filled
+            label="V3, м/c"
+            outlined
+            class="inputD"
+            type="number"
+            hide-details
+            readonly
+            v-model="check.v3"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </v-list-item>
+
     <v-divider></v-divider>
   </v-flex>
   <!-- </v-card> -->
@@ -364,8 +394,13 @@ export default {
           this.isx.p1,
           1.5
         );
-        this.check.spr = (this.isx.floor * 3 + 12) / 10;
-        this.check.spr < 5 ? (this.check.spr = 5) : this.check.spr;
+
+        this.isx.t1 > 105
+          ? (this.check.duT3 = this.check.duT11)
+          : (this.check.duT3 = this.check.duT1);
+
+        this.check.resis = (this.isx.floor * 3 + 12) / 10;
+        this.check.resis < 5 ? (this.check.resis = 5) : this.check.resis;
         this.$store.dispatch("ISX", this.isx);
       },
 
@@ -375,6 +410,7 @@ export default {
       handler() {
         this.check.v1 = myFns.speed(this.check.G1, this.check.duT1);
         this.check.v2 = myFns.speed(this.check.G2, this.check.duT11);
+        this.check.v3 = myFns.speed(this.check.G3, this.check.duT3);
         this.$store.dispatch("CHECK", this.check);
       },
 
@@ -388,7 +424,7 @@ export default {
 <style scoped>
 .inputD {
   /* padding: 0; */
-  /* font-size: 0.9em; */
+  font-size: 0.95em;
   font-weight: bold;
 }
 
