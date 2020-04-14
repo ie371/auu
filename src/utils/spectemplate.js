@@ -2,6 +2,14 @@
 
 const opt = [
   {
+    text: "ИМ-021",
+    tip: "im021"
+  },
+  {
+    text: "Датчик температуры",
+    tip: "dt"
+  },
+  {
     text: "Кран",
     tip: "tap"
   },
@@ -28,6 +36,18 @@ const opt = [
   {
     text: "Труба",
     tip: "pipe"
+  },
+  {
+    text: "Отвод",
+    tip: "otv"
+  },
+  {
+    text: "Переход",
+    tip: "per"
+  },
+  {
+    text: "Фланец",
+    tip: "fl"
   }
 ];
 

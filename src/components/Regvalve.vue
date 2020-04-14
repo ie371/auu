@@ -68,6 +68,15 @@
             v-model.number="cl_R.dP_f"
           ></v-text-field>
         </v-col>
+        <v-col cols="4">
+          <v-switch
+            class="mt-0"
+            v-model="check.filter_t1"
+            label="Фильтр"
+            color="deep-orange "
+            hide-details
+          ></v-switch>
+        </v-col>
       </v-row>
     </v-list-item>
 

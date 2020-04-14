@@ -109,43 +109,6 @@
           <v-text-field
             dense
             filled
-            label="t11, C"
-            outlined
-            class="inputD"
-            type="number"
-            hide-details
-            valid
-            v-model="isx.t11"
-            step="0.1"
-            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-            maxlength="5"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="5">
-          <v-text-field
-            dense
-            filled
-            label="t21, C"
-            outlined
-            class="inputD"
-            type="number"
-            hide-details
-            valid
-            v-model="isx.t21"
-            step="0.1"
-            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-            maxlength="5"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-list-item>
-
-    <v-list-item dense>
-      <v-row align="center" justify="space-between" dense>
-        <v-col cols="5">
-          <v-text-field
-            dense
-            filled
             label="p1, мвст"
             outlined
             class="inputD"
@@ -172,6 +135,43 @@
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="3"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </v-list-item>
+
+    <v-list-item dense>
+      <v-row align="center" justify="space-between" dense>
+        <v-col cols="5">
+          <v-text-field
+            dense
+            filled
+            label="t11, C"
+            outlined
+            class="inputD"
+            type="number"
+            hide-details
+            valid
+            v-model="isx.t11"
+            step="0.1"
+            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+            maxlength="5"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="5">
+          <v-text-field
+            dense
+            filled
+            label="t21, C"
+            outlined
+            class="inputD"
+            type="number"
+            hide-details
+            valid
+            v-model="isx.t21"
+            step="0.1"
+            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+            maxlength="5"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -412,6 +412,7 @@ export default {
         this.check.v2 = myFns.speed(this.check.G2, this.check.duT11);
         this.check.v3 = myFns.speed(this.check.G3, this.check.duT3);
         this.$store.dispatch("CHECK", this.check);
+        this.$store.dispatch("STAND");
       },
 
       deep: true

@@ -115,12 +115,10 @@
 import { mapState } from "vuex";
 import DU from "@/utils/du";
 import spectemplate from "@/utils/spectemplate";
-import ee from "@/utils/spectemplateauu";
-// import * as myFns from "@/utils/Function.js";
+
 export default {
   data: () => ({
     DU,
-    ee,
     dis_but: true,
     spectemplate,
     selected_eq: "",
@@ -147,224 +145,57 @@ export default {
   },
   methods: {
     add_stand() {
-      let x = 0;
-      let ob = 0;
-      let du_ok = "";
-      let nok = 0;
-      let _ee = [];
-      this.pumps.perem ? (du_ok = this.check.duT3) : (du_ok = this.check.duT11);
-      let tap_set = {
-        text: "Кран",
-        tip: "tap",
-        du: this.check.duT1,
-        quantity: 2
-      };
-      let tap_sys = {
-        text: "Кран",
-        tip: "tap",
-        du: this.check.duT11,
-        quantity: 2
-      };
-      let tap_obv = {
-        text: "Кран",
-        tip: "tap",
-        du: 50,
-        quantity: 1
-      };
-      let zatv = {
-        text: "Затвор",
-        tip: "zatv",
-        du: du_ok,
-        quantity: 0
-      };
-      let ok = {
-        text: "Обратный клапан",
-        tip: "ok",
-        du: du_ok,
-        quantity: 0
-      };
-      let ok_obv = {
-        text: "Обратный клапан",
-        tip: "ok",
-        du: 50,
-        quantity: 1
-      };
-      let filter = {
-        text: "Фильтр",
-        tip: "filter",
-        du: this.check.duT11,
-        quantity: 1
-      };
-      this.pumps.two_pumps ? (x = 4) : this.pumps.perem ? (x = 2) : (x = 0);
-      this.pumps.perem ? (this.pumps.double ? (nok += 1) : nok) : nok;
-      this.pumps.taps
-        ? this.isx.t1 > 105
-          ? (tap_sys.quantity += x)
-          : (tap_set.quantity += x)
-        : (zatv.quantity = x);
-
-      this.pumps.two_pumps
-        ? (nok = 2)
-        : this.pumps.double
-        ? (nok = 0)
-        : (nok = 1);
-      this.pumps.perem ? (this.pumps.double ? (nok += 1) : nok) : nok;
-      ok.quantity = nok;
-      _ee.push(tap_set);
-      _ee.push(tap_sys);
-      _ee.push(zatv);
-      _ee.push(ok);
-      let newArr_t = [];
-      let index_t = "";
-      let newArr_o = [];
-      let index_o = "";
-      if (!this.pumps.perem) {
-        newArr_t = _ee.filter(el => el.tip == "tap" && el.du == 50);
-        index_t = _ee.findIndex(el => el.tip == "tap" && el.du == 50);
-        newArr_o = _ee.filter(el => el.tip == "ok" && el.du == 50);
-        index_o = _ee.findIndex(el => el.tip == "ok" && el.du == 50);
-        newArr_t.length > 0 ? (_ee[index_t].quantity += 1) : _ee.push(tap_obv);
-        newArr_o.length > 0 ? (_ee[index_o].quantity += 1) : _ee.push(ok_obv);
-      }
-      _ee.push(filter);
-      let spec = _ee.filter(el => el.quantity > 0);
-      this.$store.dispatch("SPEC", spec);
+      this.$store.dispatch("STAND");
     },
-    add_stand__() {
-      let x = 0;
-      let du_ = "";
-      // let _ee = this.ee;
+    add_stand____() {
+      class El {
+        constructor(text, tip, du, quantity) {
+          this.text = text;
+          this.tip = tip;
+          this.du = du;
+          this.quantity = quantity;
+        }
+      }
+      let x, du_;
       let _ee = [];
-
-      let tap_set = {
-        text: "Кран",
-        tip: "tap",
-        du: "",
-        quantity: 2
-      };
-      let tap_sys = {
-        text: "Кран",
-        tip: "tap",
-        du: "",
-        quantity: 2
-      };
-      let tap_pump = {
-        text: "",
-        tip: "",
-        du: "",
-        quantity: 0
-      };
-      let tap_obv = {
-        text: "Кран",
-        tip: "tap",
-        du: 50,
-        quantity: 0
-      };
-      let ok = {
-        text: "Обратный клапан",
-        tip: "ok",
-        du: "",
-        quantity: 0
-      };
-      let ok_obv = {
-        text: "Обратный клапан",
-        tip: "ok",
-        du: 50,
-        quantity: 0
-      };
-      let filter = {
-        text: "Фильтр",
-        tip: "filter",
-        du: "",
-        quantity: 1
-      };
-
-      tap_set.du = this.check.duT1;
-      tap_sys.du = this.check.duT11;
-
-      this.pumps.taps
-        ? ((tap_pump.text = "Кран"), (tap_pump.tip = "tap"))
-        : ((tap_pump.text = "Затвор"), (tap_pump.tip = "zatv"));
-      this.pumps.perem ? (du_ = this.check.duT3) : (du_ = this.check.duT11);
-      tap_pump.du = du_;
-
-      this.pumps.two_pumps
-        ? (tap_pump.quantity = 4)
-        : this.pumps.perem
-        ? (tap_pump.quantity = 2)
-        : (tap_pump.quantity = 0);
-
+      _ee.push(new El("Кран", "tap", this.check.duT1, 2));
+      _ee.push(new El("Кран", "tap", this.check.duT11, 2));
       this.pumps.perem
-        ? ((tap_obv.quantity = 0), (ok_obv.quantity = 0))
-        : ((tap_obv.quantity = 1), (ok_obv.quantity = 1));
-
-      ok.du = du_;
-      this.pumps.two_pumps
-        ? (ok.quantity = 2)
-        : this.pumps.double
-        ? (ok.quantity = 0)
-        : (ok.quantity = 1);
-
+        ? (du_ = this.check.duT3)
+        : ((du_ = this.check.duT11), _ee.push(new El("Кран", "tap", 50, 1)));
+      this.pumps.two_pumps ? (x = 4) : this.pumps.perem ? (x = 2) : (x = 0);
+      if (x > 0) {
+        this.pumps.taps
+          ? _ee.push(new El("Кран", "tap", du_, x))
+          : _ee.push(new El("Затвор", "zatv", du_, x));
+      }
       this.pumps.perem
-        ? this.pumps.double
-          ? (ok.quantity += 1)
-          : ok.quantity
-        : ok.quantity;
+        ? this.pumps.two_pumps
+          ? _ee.push(new El("Обратный клапан", "ok", this.check.duT3, 2))
+          : _ee.push(new El("Обратный клапан", "ok", this.check.duT3, 1))
+        : this.pumps.two_pumps
+        ? (_ee.push(new El("Обратный клапан", "ok", this.check.duT3, 1)),
+          _ee.push(new El("Обратный клапан", "ok", this.check.duT11, 2)))
+        : _ee.push(new El("Обратный клапан", "ok", this.check.duT3, 1));
+      this.pumps.perem ? du_ : _ee.push(new El("Обратный клапан", "ok", 50, 1));
 
-      const result = [];
-      _ee.push(tap_set);
+      _ee.push(new El("Фильтр", "filter", this.check.duT11, 1));
+      this.check.filter_t1
+        ? _ee.push(new El("Фильтр", "filter", this.check.duT1, 1))
+        : "";
 
-      _ee.push(tap_sys);
-      _ee.push(tap_pump);
-      _ee.push(tap_obv);
-      _ee.push(ok);
-      _ee.push(ok_obv);
-      _ee.push(filter);
-
-      console.log(_ee);
-      //   _ee.forEach(el => {
-      //     let newArr = _ee.filter(el => el.tip == eq.tip && el.du == eq.du);
-      //     let index = result.findIndex(el => el.tip == eq.tip && el.du == eq.du);
-      //   });
-
-      //  if (newArr.length > 0) {
-      //     this.spec[index].quantity += eq.quantity;
-      //   } else {
-      //     this.spec.push(eq);
-      //   }
-
-      console.log(result);
-
-      // const map = new Map();
-      // const result = [];
-      // for (const item of _ee) {
-      //   if (!map.has(item.tip)) {
-      //     map.set(item.tip, true); // set any value to Map
-      //     result.push({
-      //       text: item.tip,
-      //       tip: item.tip,
-      //       du: item.du,
-      //       quantity: item.quantity
-      //     });
-      //   }
-      // }
-
-      // _ee.map(el => {
-      //   newArr = this.spec.filter(el => el.tip == eq.tip && el.du == eq.du);
-      //   index = this.spec.findIndex(el => el.tip == eq.tip && el.du == eq.du);
-      // });
-
-      // for (let value of Object.entries(_ee)) {
-      //   // console.log(`${key}: ${value}`);
-      //   console.log(value);
-      //   if (value.quantity > 0) {
-      //     _eee.push(value);
-      //   }
-      // }
-
-      // console.log(_ee);
-
-      // this.$store.dispatch("SPEC", this.spec);
+      const result = _ee.reduce(function(acc, val) {
+        let o = acc
+          .filter(function(obj) {
+            return obj.tip == val.tip && obj.du == val.du;
+          })
+          .pop() || { text: val.text, tip: val.tip, du: val.du, quantity: 0 };
+        o.quantity += val.quantity;
+        acc.push(o);
+        return acc;
+      }, []);
+      const uniq = Array.from(new Set(result));
+      this.$store.dispatch("SPEC", uniq);
     },
     remove_spec() {
       this.$store.dispatch("SPEC_REM");

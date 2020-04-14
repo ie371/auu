@@ -26,7 +26,8 @@ export default new Vuex.Store({
       duT3: "",
       v1: "",
       v2: "",
-      resis: ""
+      resis: "",
+      filter_t1: false
     },
     cl_R: {
       dP: 0.5,
@@ -133,8 +134,61 @@ export default new Vuex.Store({
     SPEC(context, payload) {
       context.commit("mu_spec", payload);
     },
-    SPEC_REM(context, payload) {
+    SPEC_REM(context) {
       context.commit("mu_spec_rem");
+    },
+    STAND(context) {
+      // console.log(state);
+      context.commit("mu_spec_rem");
+      const st = this.state;
+      class El {
+        constructor(text, tip, du, quantity) {
+          this.text = text;
+          this.tip = tip;
+          this.du = du;
+          this.quantity = quantity;
+        }
+      }
+      let x, du_;
+      let _ee = [];
+      _ee.push(new El("Кран", "tap", st.check.duT1, 2));
+      _ee.push(new El("Кран", "tap", st.check.duT11, 2));
+      st.pumps.perem
+        ? (du_ = st.check.duT3)
+        : ((du_ = st.check.duT11), _ee.push(new El("Кран", "tap", 50, 1)));
+      st.pumps.two_pumps ? (x = 4) : st.pumps.perem ? (x = 2) : (x = 0);
+      if (x > 0) {
+        st.pumps.taps
+          ? _ee.push(new El("Кран", "tap", du_, x))
+          : _ee.push(new El("Затвор", "zatv", du_, x));
+      }
+      st.pumps.perem
+        ? st.pumps.two_pumps
+          ? _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 2))
+          : _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1))
+        : st.pumps.two_pumps
+        ? (_ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1)),
+          _ee.push(new El("Обратный клапан", "ok", st.check.duT11, 2)))
+        : _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1));
+      st.pumps.perem ? du_ : _ee.push(new El("Обратный клапан", "ok", 50, 1));
+
+      _ee.push(new El("Фильтр", "filter", st.check.duT11, 1));
+      st.check.filter_t1
+        ? _ee.push(new El("Фильтр", "filter", st.check.duT1, 1))
+        : "";
+
+      const result = _ee.reduce(function(acc, val) {
+        let o = acc
+          .filter(function(obj) {
+            return obj.tip == val.tip && obj.du == val.du;
+          })
+          .pop() || { text: val.text, tip: val.tip, du: val.du, quantity: 0 };
+        o.quantity += val.quantity;
+        acc.push(o);
+        return acc;
+      }, []);
+      const uniq = Array.from(new Set(result));
+      context.commit("mu_spec", uniq);
     }
   }
 });

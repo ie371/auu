@@ -2,10 +2,10 @@
   <!-- <v-container class="grey lighten-5"> -->
   <v-flex>
     <v-row>
-      <v-col md="3">
+      <v-col md="2">
         <auu-isx></auu-isx>
       </v-col>
-      <v-col md="5">
+      <v-col md="6">
         <auu-valve></auu-valve>
       </v-col>
       <v-col md="4">

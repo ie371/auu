@@ -248,7 +248,7 @@ export default {
         );
 
         this.$store.dispatch("PUMPS", this.pumps);
-        this.$store.dispatch("SPEC_REM");
+        this.$store.dispatch("STAND");
       },
       deep: true
     }
