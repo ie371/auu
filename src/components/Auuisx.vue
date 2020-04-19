@@ -1,11 +1,9 @@
 <template>
-  <v-flex>
+  <v-row no-gutters>
     <v-list-item dense>
-      <v-list-item-content>
-        <div>
-          <strong class="success--text">Исходные данные</strong>
-        </div>
-      </v-list-item-content>
+      <div>
+        <strong class="blue--text">Исходные данные</strong>
+      </div>
     </v-list-item>
 
     <v-list-item dense>
@@ -13,13 +11,10 @@
         <v-col cols="12">
           <v-text-field
             dense
-            filled
-            outlined
             label="Qco, Гкал/ч"
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.Qco"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -34,13 +29,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            outlined
             label="Этажей"
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.floor"
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -50,13 +42,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            outlined
             label="сопр, мвст"
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="check.resis"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -71,13 +60,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            label="t1, C"
-            outlined
+            label="t1, °C"
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.t1"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -87,13 +73,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            label="t2, C"
-            outlined
+            label="t2, °C"
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.t2"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -108,13 +91,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="p1, мвст"
-            outlined
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.p1"
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -124,13 +104,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="p2, мвст"
-            outlined
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.p2"
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -145,13 +122,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="t11, C"
-            outlined
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.t11"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -161,13 +135,10 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="t21, C"
-            outlined
             class="inputD"
             type="number"
             hide-details
-            valid
             v-model="isx.t21"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
@@ -177,12 +148,10 @@
       </v-row>
     </v-list-item>
 
-    <v-divider></v-divider>
-
     <v-list-item dense>
       <v-list-item-content>
         <div>
-          <strong class="success--text">Расчетные данные</strong>
+          <strong class="blue--text">Расчетные данные</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -192,9 +161,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            label="G1, т/ч"
-            outlined
+            label="G1, м³/ч"
             class="inputD"
             type="number"
             hide-details
@@ -205,9 +172,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            label="G2, т/ч"
-            outlined
+            label="G2, м³/ч"
             class="inputD"
             type="number"
             hide-details
@@ -223,9 +188,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
-            label="G3, т/ч"
-            outlined
+            label="G3, м³/ч"
             class="inputD"
             type="number"
             hide-details
@@ -236,9 +199,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="u"
-            outlined
             class="inputD"
             type="number"
             hide-details
@@ -252,26 +213,15 @@
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
         <v-col cols="5">
-          <v-select
-            dense
-            filled
-            outlined
-            hide-details
-            :items="DU"
-            label="ДуТ1"
-            class="inputD"
-            v-model="check.duT1"
-          ></v-select>
+          <v-select dense label="ДуТ1" class="inputD" hide-details :items="DU" v-model="check.duT1"></v-select>
         </v-col>
         <v-col cols="5">
           <v-select
             dense
-            filled
-            outlined
-            hide-details
-            :items="DU"
             label="ДуТ11"
             class="inputD"
+            hide-details
+            :items="DU"
             v-model="check.duT11"
           ></v-select>
         </v-col>
@@ -283,9 +233,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="V1, м/c"
-            outlined
             class="inputD"
             type="number"
             hide-details
@@ -296,9 +244,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="V2, м/c"
-            outlined
             class="inputD"
             type="number"
             hide-details
@@ -312,23 +258,12 @@
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
         <v-col cols="5">
-          <v-select
-            dense
-            filled
-            outlined
-            hide-details
-            :items="DU"
-            label="ДуТ3"
-            class="inputD"
-            v-model="check.duT3"
-          ></v-select>
+          <v-select dense hide-details :items="DU" label="ДуТ3" class="inputD" v-model="check.duT3"></v-select>
         </v-col>
         <v-col cols="5">
           <v-text-field
             dense
-            filled
             label="V3, м/c"
-            outlined
             class="inputD"
             type="number"
             hide-details
@@ -338,16 +273,14 @@
         </v-col>
       </v-row>
     </v-list-item>
-
-    <v-divider></v-divider>
-  </v-flex>
-  <!-- </v-card> -->
+  </v-row>
 </template>
 <script>
 import { mapState } from "vuex";
 import DU from "@/utils/du";
 import * as myFns from "@/utils/Function.js";
 export default {
+  components: {},
   data() {
     return {
       DU
@@ -356,8 +289,8 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.isx,
-      check: state => state.check
+      isx: state => state.Auu.isx,
+      check: state => state.Auu.check
     })
   },
   watch: {
@@ -401,9 +334,8 @@ export default {
 
         this.check.resis = (this.isx.floor * 3 + 12) / 10;
         this.check.resis < 5 ? (this.check.resis = 5) : this.check.resis;
-        this.$store.dispatch("ISX", this.isx);
+        this.$store.dispatch("ISX_AUU", this.isx);
       },
-
       deep: true
     },
     check: {
@@ -414,7 +346,6 @@ export default {
         this.$store.dispatch("CHECK", this.check);
         this.$store.dispatch("STAND");
       },
-
       deep: true
     }
   },
@@ -431,7 +362,7 @@ export default {
 
 .inputD >>> .v-label {
   font-size: 11pt;
-  color: rgb(16, 60, 182);
+  /* color: rgb(16, 60, 182); */
   font-weight: normal;
   /* opacity: 0.5; */
 }

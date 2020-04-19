@@ -3,51 +3,51 @@
 const opt = [
   {
     text: "ИМ-021",
-    tip: "im021"
+    type: "im021"
   },
   {
     text: "Датчик температуры",
-    tip: "dt"
+    type: "dt_5"
   },
   {
     text: "Кран",
-    tip: "tap"
+    type: "tapLD"
   },
   {
     text: "Затвор",
-    tip: "zatv"
+    type: "zatv"
   },
   {
     text: "Фильтр",
-    tip: "filter"
+    type: "filt"
   },
   {
     text: "Обратный клапан",
-    tip: "ок"
+    type: "ок"
   },
   {
     text: "Манометр",
-    tip: "man"
+    type: "man16"
   },
   {
     text: "Термометр",
-    tip: "term"
+    type: "term"
   },
   {
     text: "Труба",
-    tip: "pipe"
+    type: "pipe"
   },
   {
     text: "Отвод",
-    tip: "otv"
+    type: "otv"
   },
   {
     text: "Переход",
-    tip: "per"
+    type: "per"
   },
   {
     text: "Фланец",
-    tip: "fl"
+    type: "fl"
   }
 ];
 

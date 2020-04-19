@@ -3,7 +3,7 @@
     <v-list-item dense>
       <v-list-item-content>
         <div>
-          <strong class="success--text">Регулятор перепада давления</strong>
+          <strong class="blue--text">Регулятор перепада давления</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -13,8 +13,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="dP расч"
             class="inputD"
             type="number"
@@ -29,8 +27,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кv расч"
             class="inputD"
             type="number"
@@ -42,8 +38,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кvs"
             class="inputD"
             type="number"
@@ -56,8 +50,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="dP факт"
             class="inputD"
             type="number"
@@ -74,13 +66,11 @@
         <v-col cols="4">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="clap_P"
             label="Производ"
             class="inputD"
-            v-model="cl_P.firms"
+            v-model="cl_P.zavod"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -88,8 +78,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Диапазон"
             class="inputD"
             type="text"
@@ -102,8 +90,6 @@
         <v-col cols="2">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="DU"
             label="Ду"
@@ -120,23 +106,19 @@
         <v-col cols="9">
           <v-text-field
             dense
-            filled
-            outlined
             label="Наименование"
             class="inputD"
             type="text"
             hide-details
             clearable
-            v-model="cl_P.naim"
+            v-model="cl_P.spec_name"
           ></v-text-field>
         </v-col>
 
         <v-col cols="3">
           <v-text-field
             dense
-            filled
-            outlined
-            label="обозн"
+            label="обозначение"
             class="inputD"
             type="text"
             hide-details
@@ -162,9 +144,9 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.isx,
-      check: state => state.check,
-      cl_P: state => state.cl_P
+      isx: state => state.Auu.isx,
+      check: state => state.Auu.check,
+      cl_P: state => state.Auu.cl_P
     })
   },
   watch: {
@@ -178,8 +160,13 @@ export default {
 
     cl_P: {
       handler() {
-        this.cl_P.Kv = myFns.Kv(this.check.G1, this.cl_P.dP);
-        this.cl_P.dP_f = myFns.dP_fact(this.check.G1, this.cl_P.Kvs);
+        this.cl_P.Kv = +myFns.Kv(this.check.G1, this.cl_P.dP);
+
+        this.cl_P.Kvs
+          ? (this.cl_P.dP_f = myFns.dP_fact(this.check.G1, this.cl_P.Kvs))
+          : (this.cl_P.dP_f = "");
+
+        this.cl_P.enable ? (this.cl_P.kolvo = 1) : (this.cl_P.kolvo = 0);
         this.$store.dispatch("CL_PER", this.cl_P);
       },
       deep: true
@@ -189,11 +176,19 @@ export default {
     change_clp() {
       let n = "Регулятор перепада давления ";
       let diap = this.cl_P.diap;
-      let f = this.cl_P.firms;
+      let f = this.cl_P.zavod;
       let d = this.cl_P.du;
       let k = this.cl_P.Kvs;
-      this.cl_P.naim =
-        n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч, диапазон " + diap + " бар";
+      this.cl_P.spec_name =
+        n +
+        f +
+        ", Ду" +
+        d +
+        ", Kvs=" +
+        k +
+        " м³/ч, диапазон настройки " +
+        diap +
+        " бар";
     }
   }
 };
@@ -208,7 +203,7 @@ export default {
 
 .inputD >>> .v-label {
   font-size: 11pt;
-  color: rgb(16, 60, 182);
+  /* color: rgb(16, 60, 182); */
   font-weight: normal;
   /* opacity: 0.5; */
 }

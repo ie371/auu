@@ -3,7 +3,7 @@
     <v-list-item dense>
       <v-list-item-content>
         <div>
-          <strong class="success--text">Регулятор давления "до себя"</strong>
+          <strong class="blue--text">Регулятор давления "до себя"</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -13,8 +13,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="dP расч"
             class="inputD"
             type="number"
@@ -30,8 +28,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кv расч"
             class="inputD"
             type="number"
@@ -44,8 +40,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кvs"
             class="inputD"
             type="number"
@@ -59,8 +53,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="dP факт"
             class="inputD"
             type="number"
@@ -73,10 +65,10 @@
 
         <v-col cols="4">
           <v-switch
-            class="mt-0"
+            class="inputD mt-0"
             v-model="cl_D.balans"
             label="Баланс. клапан"
-            color="orange"
+            color="deep-orange"
             hide-details
             @change="change_clp"
           ></v-switch>
@@ -89,13 +81,11 @@
         <v-col cols="4">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="clap"
             label="Производ"
             class="inputD"
-            v-model="cl_D.firms"
+            v-model="cl_D.zavod"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -103,22 +93,19 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Диапазон"
             class="inputD"
             type="text"
             hide-details
             valid
             v-model="cl_D.diap"
+            @change="change_clp"
           ></v-text-field>
         </v-col>
 
         <v-col cols="2">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="DU"
             label="Ду"
@@ -135,24 +122,20 @@
         <v-col cols="9">
           <v-text-field
             dense
-            filled
-            outlined
             label="Наименование"
             class="inputD"
             type="text"
             hide-details
             valid
             clearable
-            v-model="cl_D.naim"
+            v-model="cl_D.spec_name"
           ></v-text-field>
         </v-col>
 
         <v-col cols="3">
           <v-text-field
             dense
-            filled
-            outlined
-            label="обозн"
+            label="обозначение"
             class="inputD"
             type="text"
             hide-details
@@ -179,9 +162,9 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.isx,
-      check: state => state.check,
-      cl_D: state => state.cl_D
+      isx: state => state.Auu.isx,
+      check: state => state.Auu.check,
+      cl_D: state => state.Auu.cl_D
     })
   },
   watch: {
@@ -192,11 +175,15 @@ export default {
       },
       deep: true
     },
-
     cl_D: {
       handler() {
         this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
-        this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs);
+
+        this.cl_D.Kvs
+          ? (this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs))
+          : (this.cl_D.dP_f = "");
+
+        this.cl_D.enable ? (this.cl_D.kolvo = 1) : (this.cl_D.kolvo = 0);
         this.$store.dispatch("CL_DOS", this.cl_D);
       },
       deep: true
@@ -209,13 +196,11 @@ export default {
       this.cl_D.balans
         ? ((n = "Клапан балансировочный "), (x = ""))
         : ((n = "Регулятор давления 'до себя' "),
-          (x = ", диапазон " + this.cl_D.diap + " бар"));
-
-      // let diap = this.cl_D.diap;
-      let f = this.cl_D.firms;
+          (x = ", диапазон настройки " + this.cl_D.diap + " бар"));
+      let f = this.cl_D.zavod;
       let d = this.cl_D.du;
       let k = this.cl_D.Kvs;
-      this.cl_D.naim = n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч" + x;
+      this.cl_D.spec_name = n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч" + x;
     }
   }
 };
@@ -230,7 +215,7 @@ export default {
 
 .inputD >>> .v-label {
   font-size: 11pt;
-  color: rgb(16, 60, 182);
+  /* color: rgb(16, 60, 182); */
   font-weight: normal;
   /* opacity: 0.5; */
 }

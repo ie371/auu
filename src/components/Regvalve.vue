@@ -1,11 +1,9 @@
 <template>
-  <!-- <v-card class="mx-auto" max-width="400"> -->
   <v-flex>
     <v-list-item dense>
       <v-list-item-content>
-        <!-- <v-list-item-subtitle class="red--text">Клапан регулирующий</v-list-item-subtitle> -->
         <div>
-          <strong class="success--text">Клапан регулирующий</strong>
+          <strong class="blue--text">Клапан регулирующий</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -15,8 +13,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="dP расч"
             class="inputD"
             type="number"
@@ -31,8 +27,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кv расч"
             class="inputD"
             type="number"
@@ -44,8 +38,6 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
             label="Кvs"
             class="inputD"
             type="number"
@@ -58,8 +50,7 @@
         <v-col cols="2">
           <v-text-field
             dense
-            filled
-            outlined
+            flat
             label="dP факт"
             class="inputD"
             type="number"
@@ -68,15 +59,16 @@
             v-model.number="cl_R.dP_f"
           ></v-text-field>
         </v-col>
-        <v-col cols="4">
+
+        <v-layout align-center justify-center>
           <v-switch
-            class="mt-0"
+            class="inputD mt-0"
             v-model="check.filter_t1"
             label="Фильтр"
             color="deep-orange "
             hide-details
           ></v-switch>
-        </v-col>
+        </v-layout>
       </v-row>
     </v-list-item>
 
@@ -85,13 +77,11 @@
         <v-col cols="4">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="clap_R"
             label="Производ"
             class="inputD"
-            v-model="cl_R.firms"
+            v-model="cl_R.zavod"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -99,8 +89,6 @@
         <v-col cols="2">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="tip_cl"
             label="Тип"
@@ -113,8 +101,6 @@
         <v-col cols="2">
           <v-select
             dense
-            filled
-            outlined
             hide-details
             :items="DU"
             label="Ду"
@@ -131,27 +117,23 @@
         <v-col cols="9">
           <v-text-field
             dense
-            filled
-            outlined
             label="Наименование"
             class="inputD"
             type="text"
             hide-details
             clearable
-            v-model="cl_R.naim_cl"
+            v-model="cl_R.spec_name"
           ></v-text-field>
         </v-col>
 
         <v-col cols="3">
           <v-text-field
             dense
-            filled
-            outlined
-            label="обозн"
+            label="обозначение"
             class="inputD"
             type="text"
             hide-details
-            v-model="cl_R.obozn_cl"
+            v-model="cl_R.obozn"
             @change="change_clp"
           ></v-text-field>
         </v-col>
@@ -163,27 +145,22 @@
         <v-col cols="9">
           <v-text-field
             dense
-            filled
-            outlined
             label="Привод"
             class="inputD"
             type="text"
             hide-details
-            v-model="cl_R.naim_priv"
+            v-model="cl_drive.spec_name"
           ></v-text-field>
         </v-col>
 
         <v-col cols="3">
           <v-text-field
             dense
-            filled
-            outlined
-            label="обозн"
+            label="обозначение"
             class="inputD"
             type="text"
             hide-details
-            v-model="cl_R.obozn_priv"
-            @change="change_clp"
+            v-model="cl_drive.obozn"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -214,9 +191,10 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.isx,
-      check: state => state.check,
-      cl_R: state => state.cl_R
+      isx: state => state.Auu.isx,
+      check: state => state.Auu.check,
+      cl_R: state => state.Auu.cl_R,
+      cl_drive: state => state.Auu.cl_drive
     })
   },
   watch: {
@@ -230,13 +208,21 @@ export default {
     cl_R: {
       handler() {
         this.cl_R.Kv = myFns.Kv(this.check.G1, this.cl_R.dP);
-        if (this.cl_R.Kvs) {
-          this.cl_R.dP_f = myFns.dP_fact(this.check.G1, this.cl_R.Kvs);
-        }
-        this.cl_R.naim_cl
-          ? (this.cl_R.naim_priv = "Электропривод клапана ")
-          : (this.cl_R.naim_priv = "");
+
+        this.cl_R.Kvs
+          ? (this.cl_R.dP_f = myFns.dP_fact(this.check.G1, this.cl_R.Kvs))
+          : (this.cl_R.dP_f = "");
+
+        this.cl_R.zavod
+          ? (this.cl_drive.zavod = this.cl_R.zavod)
+          : (this.cl_drive.zavod = "");
         this.$store.dispatch("CL_REG", this.cl_R);
+      },
+      deep: true
+    },
+    cl_drive: {
+      handler() {
+        this.$store.dispatch("CL_DRI", this.cl_drive);
       },
       deep: true
     }
@@ -245,10 +231,10 @@ export default {
     change_clp() {
       let n = "Клапан регулирующий ";
       let t = this.cl_R.tip;
-      let f = this.cl_R.firms;
+      let f = this.cl_R.zavod;
       let d = this.cl_R.du;
       let k = this.cl_R.Kvs;
-      this.cl_R.naim_cl =
+      this.cl_R.spec_name =
         n + t + "-х ходовой " + f + ", Ду" + d + ", Kvs=" + k + " м³/ч";
     }
   }
@@ -264,7 +250,7 @@ export default {
 
 .inputD >>> .v-label {
   font-size: 11pt;
-  color: rgb(16, 60, 182);
+  /* color: rgb(16, 60, 182); */
   font-weight: normal;
   /* opacity: 0.5; */
 }

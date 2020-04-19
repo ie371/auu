@@ -1,42 +1,37 @@
 <template>
-  <v-flex>
+  <v-row no-gutters>
     <reg-valve></reg-valve>
 
-    <v-divider></v-divider>
+    <pumps></pumps>
 
     <v-list-item dense>
       <v-row align="center" dense>
-        <v-col cols="6">
+        <v-layout align-center justify-center>
           <v-switch
-            class="mt-0"
+            class="inputD mt-0"
             v-model="rpdvalve"
             label="Регулятор перепада"
-            color="info"
+            color="deep-orange"
             hide-details
           ></v-switch>
-        </v-col>
-        <v-col cols="6">
+        </v-layout>
+
+        <v-layout align-center justify-center>
           <v-switch
-            class="mt-0"
+            class="inputD mt-0"
             v-model="rdsvalve"
             label="Регулятор до себя (балансировочный клапан)"
-            color="info"
+            color="deep-orange"
             hide-details
           ></v-switch>
-        </v-col>
+        </v-layout>
       </v-row>
     </v-list-item>
 
-    <v-divider></v-divider>
-
     <rpd-valve v-show="rpdvalve"></rpd-valve>
 
-    <v-divider></v-divider>
-
     <rds-valve v-show="rdsvalve"></rds-valve>
-
-    <pumps></pumps>
-  </v-flex>
+  </v-row>
 </template>
 <script>
 import { mapState } from "vuex";
@@ -60,9 +55,8 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.isx,
-      cl_P: state => state.cl_P,
-      cl_D: state => state.cl_D
+      cl_P: state => state.Auu.cl_P,
+      cl_D: state => state.Auu.cl_D
     })
   },
   watch: {
@@ -74,19 +68,28 @@ export default {
       this.cl_D.enable = this.rdsvalve;
       this.$store.dispatch("CL_DOS", this.cl_D);
     }
-    //   deep: true
-    // },
-
-    // cl_D: {
-    //   handler() {
-    //     this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
-    //     this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs);
-    //     this.$store.dispatch("CL_DOS", this.cl_D);
-    //   },
-    //   deep: true
-    // }
   },
   methods: {}
 };
 </script>
 
+<style scoped>
+.inputD {
+  font-size: 0.95em;
+  font-weight: bold;
+}
+
+.inputD >>> .v-label {
+  font-size: 11pt;
+  /* color: rgb(16, 60, 182); */
+  font-weight: normal;
+  /* opacity: 0.5; */
+}
+.inputD >>> input[type="number"] {
+  -moz-appearance: textfield;
+}
+.inputD >>> input::-webkit-outer-spin-button,
+.inputD >>> input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+</style>

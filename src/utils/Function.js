@@ -47,8 +47,8 @@ export function Kv(G, dp) {
   return kv;
 }
 
-export function dP_fact(G, kv) {
-  let kvf = +Math.pow((1 * G) / kv, 2).toFixed(2);
+export function dP_fact(G, kvs) {
+  let kvf = +Math.pow((1 * G) / kvs, 2).toFixed(2);
   return kvf;
 }
 
@@ -57,6 +57,5 @@ export function G_pump(G, k, u, p) {
   p ? (x = 0) : (x = 1);
   let Gp = (k * G * (x + u)).toFixed(3);
 
-  // console.log(G, "kv=", kv, "kvf=", kvf);
   return Gp;
 }
