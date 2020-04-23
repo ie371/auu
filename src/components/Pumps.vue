@@ -184,7 +184,7 @@
 <script>
 import { mapState } from "vuex";
 import DU from "@/utils/du";
-import * as myFns from "@/utils/Function.js";
+import * as myFns from "@/utils/FuncAuu.js";
 export default {
   data() {
     return {

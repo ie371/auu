@@ -5,19 +5,19 @@
         <strong class="red--text">Система отопления/теплоснабжения</strong>
       </div>
     </v-list-item>
-
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
         <v-col cols="12">
           <v-select
             dense
             class="inputD"
-            v-model="check.sx_otkr"
+            v-model="sx.sx_otkr"
             :items="sx_ts"
             item-text="text"
             item-value="val"
             label="Схема теплоснабжения"
             hide-details
+            :disabled="no_sx_otkr"
           ></v-select>
         </v-col>
       </v-row>
@@ -139,13 +139,22 @@
             class="inputD"
             type="number"
             hide-details
+            v-model.number="flow.G1v"
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-            maxlength="3"
+            maxlength="6"
+            v-on:input="rash()"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
-          <v-text-field dense class="inputD" type="number" hide-details disabled></v-text-field>
+          <v-text-field
+            dense
+            class="inputD"
+            type="number"
+            hide-details
+            v-model.number="flow.G2v"
+            disabled
+          ></v-text-field>
         </v-col>
       </v-row>
     </v-list-item>
@@ -156,10 +165,18 @@
           <span class="caption py-3">Ду прибора</span>
         </v-col>
         <v-col cols="3">
-          <v-select dense class="inputD" hide-details :items="DU" v-model="du.di1"></v-select>
+          <v-select
+            dense
+            class="inputD"
+            hide-details
+            :items="DUIM"
+            item-text="text"
+            item-value="val"
+            v-model.number="du.di1"
+          ></v-select>
         </v-col>
         <v-col cols="3">
-          <v-select dense class="inputD" hide-details :items="DU" v-model="du.di2" readonly></v-select>
+          <v-text-field dense class="inputD" hide-details disabled v-model="di2_text"></v-text-field>
         </v-col>
       </v-row>
     </v-list-item>
@@ -169,11 +186,25 @@
         <v-col cols="6">
           <span class="caption py-3">Скорость, м/с</span>
         </v-col>
-        <v-col cols="3">
-          <v-text-field dense class="inputD" type="number" hide-details disabled></v-text-field>
+        <v-col cols="3" :class="{'err' : check_speed.v0 }">
+          <v-text-field
+            dense
+            class="inputD"
+            hide-details
+            type="number"
+            v-model.number="V1"
+            disabled
+          ></v-text-field>
         </v-col>
-        <v-col cols="3">
-          <v-text-field dense class="inputD" type="number" hide-details disabled></v-text-field>
+        <v-col cols="3" :class="{'err' : check_speed.v1 }">
+          <v-text-field
+            dense
+            class="inputD"
+            hide-details
+            type="number"
+            disabled
+            v-model.number="V2"
+          ></v-text-field>
         </v-col>
       </v-row>
     </v-list-item>
@@ -183,19 +214,22 @@
         <v-col cols="6">
           <span class="caption py-3">Тип ИМ</span>
         </v-col>
-        <v-col cols="3">
-          <v-select dense class="inputD" hide-details :items="tip_im" v-model.number="check.tipIMo"></v-select>
-        </v-col>
-        <v-col cols="3">
-          <v-text-field
+        <v-col cols="6">
+          <v-select
             dense
             class="inputD"
-            type="number"
+            :class="{'errs' : no_i6 }"
             hide-details
+            :items="tip_im"
+            item-text="text"
+            item-value="val"
             v-model.number="check.tipIMo"
-            disabled
-          ></v-text-field>
+            :append-icon="no_i6 ? 'mdi-alert-rhombus-outline' : undefined"
+          ></v-select>
         </v-col>
+        <!-- <v-col cols="3">
+          <v-text-field dense class="inputD" type="text" hide-details v-model="tipi2" disabled></v-text-field>
+        </v-col>-->
       </v-row>
     </v-list-item>
     <!-- //////////////////////Ду трубопроводов////////////////////////////////// -->
@@ -205,10 +239,26 @@
           <span class="caption py-3">Ду трубопроводов</span>
         </v-col>
         <v-col cols="3">
-          <v-select dense class="inputD" hide-details :items="DU" v-model="du.dut1"></v-select>
+          <v-select
+            dense
+            class="inputD"
+            hide-details
+            :items="diap_t1"
+            item-text="text"
+            item-value="val"
+            v-model.number="du.dut1"
+          ></v-select>
         </v-col>
         <v-col cols="3">
-          <v-select dense class="inputD" hide-details :items="DU" v-model="du.dut2"></v-select>
+          <v-select
+            dense
+            class="inputD"
+            hide-details
+            :items="diap_t2"
+            item-text="text"
+            item-value="val"
+            v-model.number="du.dut2"
+          ></v-select>
         </v-col>
       </v-row>
     </v-list-item>
@@ -233,24 +283,27 @@
           <v-select
             dense
             class="inputD"
+            :class="{'errs' : no_mod }"
             v-model="check.tipLo"
             :items="tip_lin"
             item-text="text"
             item-value="val"
             label="Тип изм. линии"
             hide-details
+            :append-icon="no_mod ? 'mdi-alert-rhombus-outline' : undefined"
           ></v-select>
         </v-col>
         <v-col cols="6">
           <v-select
             dense
             class="inputD"
-            v-model="check.filo"
+            v-model.number="check.filo"
             :items="tip_filtr"
             item-text="text"
             item-value="val"
             label="Фильтр"
             hide-details
+            :disabled="no_filter"
           ></v-select>
         </v-col>
       </v-row>
@@ -258,18 +311,48 @@
     <!-- /////////////////////ПОДПИТКА switch/////////////////////////////////// -->
     <v-list-item dense>
       <v-row align="center" justify="space-between">
-        <v-layout align-center justify-center>
-          <v-switch
-            dense
-            class="inputD mt-0"
-            v-model.number="check.sx_ot"
-            label="Подпитка"
-            color="deep-orange"
-            hide-details
-          ></v-switch>
-        </v-layout>
-
         <v-col cols="6">
+          <v-layout align-center justify-center>
+            <v-switch
+              dense
+              class="inputD mt-0"
+              v-model.number="sx.sx_ot"
+              label="Подпитка"
+              color="deep-orange"
+              hide-details
+            ></v-switch>
+          </v-layout>
+        </v-col>
+      </v-row>
+    </v-list-item>
+    <!-- //////////////ПОДПИТКА////////////////////////////////////////// -->
+    <v-list-item dense v-show="sx.sx_ot">
+      <v-row align="center">
+        <v-col cols="3">
+          <v-text-field
+            dense
+            label="Расход, м³/ч"
+            class="inputD"
+            type="number"
+            hide-details
+            disabled
+            v-model.number="flow.G9v"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="3" :class="{'err' : check_speed.v2 }">
+          <v-text-field
+            dense
+            label="Скорость, м/с"
+            class="inputD"
+            type="number"
+            hide-details
+            disabled
+            v-model.number="V9"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="6" v-show="check.sx_ot">
           <v-select
             dense
             class="inputD"
@@ -283,38 +366,34 @@
         </v-col>
       </v-row>
     </v-list-item>
-    <!-- //////////////ПОДПИТКА////////////////////////////////////////// -->
-    <v-list-item dense>
-      <v-row align="center" justify="space-between">
-        <v-col cols="2">
-          <v-text-field
+    <v-list-item dense v-show="sx.sx_ot">
+      <v-row align="center">
+        <v-col cols="4">
+          <v-select
             dense
-            label="Расход, м³/ч"
+            label="Ду ИМ"
             class="inputD"
-            type="number"
             hide-details
-            disabled
-          ></v-text-field>
+            :items="DUIM"
+            item-text="text"
+            item-value="val"
+            v-model.number="du.di9"
+          ></v-select>
         </v-col>
-        <v-col cols="3">
-          <v-select dense label="Ду ИМ" class="inputD" hide-details :items="DU" v-model="du.di9"></v-select>
-        </v-col>
-        <v-col cols="2">
-          <v-text-field
+        <v-col cols="4">
+          <v-select
             dense
-            label="Скорость, м/с"
+            label="Ду Т94"
             class="inputD"
-            type="number"
             hide-details
-            disabled
-          ></v-text-field>
+            item-text="text"
+            item-value="val"
+            :items="diap_t9"
+            v-model.number="du.dut9"
+          ></v-select>
         </v-col>
 
-        <v-col cols="3">
-          <v-select dense label="Ду Т94" class="inputD" hide-details :items="DU" v-model="du.dut9"></v-select>
-        </v-col>
-
-        <v-col cols="2">
+        <v-col cols="4">
           <v-text-field
             dense
             label="Отметка"
@@ -331,16 +410,25 @@
  <script>
 import { mapState } from "vuex";
 import DU from "@/utils/du";
-import * as myFns from "@/utils/Function.js";
+import DUIM from "@/utils/du_im";
+import * as myFns from "@/utils/FuncUu.js";
 export default {
   data() {
     return {
+      V1: "",
+      V2: "",
+      V9: "",
       DU,
+      DUIM,
+      diap_t1: [],
+      diap_t2: [],
+      diap_t9: [],
+      di2_text: "",
       sx_ts: [
         { text: "закрытая", val: 0 },
         { text: "открытая с ИМ на ГВС", val: 1 },
-        { text: "открытая без ИМ на ГВСЦ", val: 2 },
-        { text: "открытая без ИМ на ГВСТ", val: 3 }
+        { text: "открытая без ИМ на ГВС с циркуляцией", val: 2 },
+        { text: "открытая без ИМ на ГВС тупиковая", val: 3 }
       ],
       formula_u: [
         { text: "закрытая (М1 = М2)", val: 0 },
@@ -358,71 +446,147 @@ export default {
       tip_im: [
         { text: "И6", val: 6 },
         { text: "К5", val: 5 }
-      ]
+      ],
+      dis_filtr: false
     };
   },
 
   computed: {
     ...mapState({
-      isx: state => state.Uu.isx,
-      check: state => state.Uu.check,
-      du: state => state.Uu.du
-    })
+      sx: state => state.Uu.sx,
+      gen: state => state.Uu.gen,
+      isx: state => state.Uu.isx_co,
+      isx_gvs: state => state.Uu.isx_gvs,
+      check: state => state.Uu.check_co,
+      du: state => state.Uu.du_co,
+      flow: state => state.Uu.flow_co
+    }),
+    check_speed() {
+      let obj = {},
+        sp = [this.V1, this.V2, this.V9];
+      sp.forEach(function(el, i) {
+        el > 1.5 ? (obj["v" + i] = true) : (obj["v" + i] = false);
+      });
+      return obj;
+    },
+    no_mod() {
+      let a = false;
+      (this.du.di1 > 80 || this.du.di1 < 32) && this.check.tipLo === "ml"
+        ? (a = true)
+        : (a = false);
+      return a;
+    },
+    no_i6() {
+      let a = false;
+      (this.du.di1 > 80 || this.du.di1 < 25) &&
+      this.du.di1 &&
+      this.check.tipIMo === 6
+        ? (a = true)
+        : (a = false);
+      return a;
+    },
+    no_sx_otkr() {
+      let a = false;
+      this.isx_gvs.qmax && this.isx.qco
+        ? this.sx.sx_gvs_dep == 0
+          ? (a = false)
+          : (a = true)
+        : (a = true);
+      this.sx.sx_gvs_dep > 0 ? (a = true) : "";
+      return a;
+    },
+    no_filter() {
+      let a = false;
+      this.check.tipLo === "ml" ? (a = true) : (a = false);
+      return a;
+    }
   },
   watch: {
-    isx: {
+    check: {
       handler() {
-        this.isx.qco > 100
-          ? (this.isx.qco = this.isx.qco / 1000)
-          : this.isx.qco / 1;
-
-        // this.check.sx_gvs = 0;
-        // this.isx.qmax > 100
-        //   ? (this.isx.qmax = this.isx.qmax / 1000)
-        //   : this.isx.qmax;
-
-        // this.isx.qmax > 0
-        //   ? (this.isx.qgvssr = (this.isx.qmax / this.isx.Kchn).toFixed(6))
-        //   : ((this.isx.qgvssr = ""),
-        //     (this.check.tipLg4 = this.check.tipLg3),
-        //     (this.check.tipIMg4 = this.check.tipIMg3),
-        //     (this.check.revers = 0),
-        //     (this.check.fuCo = 0),
-        //     (this.check.sx_gvs_dep = 0));
-
-        // this.isx.qgvssr > 100
-        //   ? (this.isx.qgvssr = this.isx.qgvssr / 1000)
-        //   : this.isx.qgvssr;
-
-        // if (this.isx.qco > 0 && this.isx.qmax > 0) {
-        //   this.check.tipuu = "og";
-        // } else if (this.isx.qco > 0) {
-        //   this.check.tipuu = "o";
-        // } else if (this.isx.qmax > 0) {
-        //   this.check.tipuu = "g";
-        // } else {
-        //   this.check.tipuu = "";
-        // }
-
-        // this.check.G1 = myFns.rash(
-        //   this.isx.Qco,
-        //   this.isx.t1,
-        //   this.isx.t2,
-        //   this.isx.p1
-        // );
-        this.$store.dispatch("ISX_UU", this.isx);
-        this.$store.dispatch("CHECK_UU", this.check);
+        this.$store.dispatch("CHECK_CO", this.check);
       },
       deep: true
     },
-    atm: {
+    isx: {
       handler() {
-        this.$store.dispatch("ATM", this.atm);
+        if (this.isx.qco > 0) {
+          this.$store.dispatch({
+            type: "ISX_CO",
+            isx: this.isx,
+            du: this.du,
+            flow: this.flow
+          });
+        }
+
+        this.sx.sx_otkr = 0;
+        this.sx.sx_gvs_dep = 0;
+        this.check.sx_gvs = 0;
+        this.$store.dispatch("SX", this.sx);
+        this.$store.dispatch("GEN_UU", this.gen);
+      },
+      deep: true
+    },
+    du: {
+      handler() {
+        if (this.du.di1 == 0) {
+          this.di2_text = "";
+          this.$store.dispatch("null_CO");
+        } else if (this.du.di1) {
+          this.du.di2 = this.du.di1;
+          this.du.dut2 = this.du.dut1;
+          this.di2_text = this.DU.find(x => x.val === this.du.di1).text;
+          if (this.flow.G1v > 0) {
+            this.V1 = myFns.speed(this.flow.G1v, this.du.di1);
+            this.V2 = myFns.speed(this.flow.G2v, this.du.di2);
+            this.V9 = myFns.speed(this.flow.G9v, this.du.di9);
+          } else {
+            this.du.di9 ? "" : (this.du.di9 = this.du.di1);
+          }
+
+          this.diap_t1 = myFns.diap_tr(this.du.di1);
+          this.diap_t2 = this.diap_t1;
+          this.diap_t1.find(x => x.val === this.du.dut1)
+            ? ""
+            : ((this.du.dut1 = this.diap_t1[1].val),
+              (this.diap_t2 = this.diap_t1),
+              (this.du.dut2 = this.diap_t1[1].val));
+
+          // if (this.gen.sx_ot) {
+          this.diap_t9 = myFns.diap_tr(this.du.di9);
+          this.diap_t9.find(x => x.val === this.du.dut9)
+            ? this.du.dut9
+            : (this.du.dut9 = this.diap_t9[1].val);
+          // }
+
+          this.$store.dispatch("DU_CO", this.du);
+        }
+      },
+      deep: true
+    },
+    flow: {
+      handler() {
+        if (this.flow.G1v > 0 && !this.isx.qco > 0) {
+          this.$store.dispatch({
+            type: "ISX_CO",
+            isx: this.isx,
+            du: this.du,
+            flow: this.flow
+          });
+        } else if (!this.flow.G1v > 0) {
+          this.V1 = "";
+          this.V2 = "";
+          this.V9 = "";
+        }
       },
       deep: true
     }
   },
-  methods: {}
+  methods: {
+    rash() {
+      this.isx.qco = "";
+    }
+  }
 };
 </script>
 
@@ -431,12 +595,9 @@ export default {
   font-size: 0.95em;
   font-weight: bold;
 }
-
 .inputD >>> .v-label {
   font-size: 11pt;
-  /* color: rgb(16, 60, 182); */
   font-weight: normal;
-  /* opacity: 0.5; */
 }
 .inputD >>> input[type="number"] {
   -moz-appearance: textfield;
@@ -444,6 +605,18 @@ export default {
 .inputD >>> input::-webkit-outer-spin-button,
 .inputD >>> input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+}
+.err >>> .v-input input {
+  color: #dd0808;
+}
+.err >>> .v-input__icon {
+  color: #dd0808;
+}
+.errs >>> .v-select__selection {
+  color: #dd0808;
+}
+.errs >>> .v-icon {
+  color: #dd0808;
 }
 </style>
    

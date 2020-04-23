@@ -8,13 +8,9 @@ const opt = [
   { text: "65", val: 65 },
   { text: "80", val: 80 },
   { text: "100", val: 100 },
-  { text: "125", val: 125 },
   { text: "150", val: 150 },
   { text: "200", val: 200 },
-  { text: "250", val: 250 },
-  { text: "300", val: 300 },
-  { text: "400", val: 400 },
-  { text: "500", val: 500 }
+  { text: "300", val: 300 }
 ];
 
 export default opt;

@@ -7,4 +7,5 @@ export default new Vuetify({
   theme: {
     dark: false
   }
+  // theme: { disable: true }
 });

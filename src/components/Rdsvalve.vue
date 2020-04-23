@@ -63,7 +63,8 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="4">
+        <!-- <v-col cols="4"> -->
+        <v-layout align-center justify-center>
           <v-switch
             class="inputD mt-0"
             v-model="cl_D.balans"
@@ -72,7 +73,8 @@
             hide-details
             @change="change_clp"
           ></v-switch>
-        </v-col>
+        </v-layout>
+        <!-- </v-col> -->
       </v-row>
     </v-list-item>
 
@@ -151,7 +153,7 @@
 <script>
 import { mapState } from "vuex";
 import DU from "@/utils/du";
-import * as myFns from "@/utils/Function.js";
+import * as myFns from "@/utils/FuncAuu.js";
 export default {
   data() {
     return {

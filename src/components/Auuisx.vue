@@ -213,16 +213,27 @@
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
         <v-col cols="5">
-          <v-select dense label="ДуТ1" class="inputD" hide-details :items="DU" v-model="check.duT1"></v-select>
+          <v-select
+            dense
+            label="ДуТ1"
+            class="inputD"
+            item-text="text"
+            item-value="val"
+            hide-details
+            :items="DU"
+            v-model.number="check.duT1"
+          ></v-select>
         </v-col>
         <v-col cols="5">
           <v-select
             dense
             label="ДуТ11"
             class="inputD"
+            item-text="text"
+            item-value="val"
             hide-details
             :items="DU"
-            v-model="check.duT11"
+            v-model.number="check.duT11"
           ></v-select>
         </v-col>
       </v-row>
@@ -238,7 +249,7 @@
             type="number"
             hide-details
             readonly
-            v-model="check.v1"
+            v-model.number="check.v1"
           ></v-text-field>
         </v-col>
         <v-col cols="5">
@@ -249,7 +260,7 @@
             type="number"
             hide-details
             readonly
-            v-model="check.v2"
+            v-model.number="check.v2"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -258,7 +269,16 @@
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
         <v-col cols="5">
-          <v-select dense hide-details :items="DU" label="ДуТ3" class="inputD" v-model="check.duT3"></v-select>
+          <v-select
+            dense
+            hide-details
+            :items="DU"
+            label="ДуТ3"
+            class="inputD"
+            item-text="text"
+            item-value="val"
+            v-model.number="check.duT3"
+          ></v-select>
         </v-col>
         <v-col cols="5">
           <v-text-field
@@ -278,7 +298,7 @@
 <script>
 import { mapState } from "vuex";
 import DU from "@/utils/du";
-import * as myFns from "@/utils/Function.js";
+import * as myFns from "@/utils/FuncAuu.js";
 export default {
   components: {},
   data() {
@@ -286,7 +306,6 @@ export default {
       DU
     };
   },
-
   computed: {
     ...mapState({
       isx: state => state.Auu.isx,

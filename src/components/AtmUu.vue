@@ -8,7 +8,7 @@
         <v-switch
           dense
           class="inputD mt-0"
-          v-model.number="isx.IL"
+          v-model.number="gen.IL"
           label="Измерительные линии"
           color="deep-orange"
           hide-details
@@ -59,7 +59,7 @@
         <v-switch
           dense
           class="inputD mt-0"
-          v-model.number="isx.met_ruk"
+          v-model.number="atm.met_ruk"
           label="Металлорукав"
           color="deep-orange"
           hide-details
@@ -114,7 +114,7 @@
           <v-select
             dense
             class="inputD"
-            v-model="isx.teploiz_ot"
+            v-model="atm.teploiz_ot"
             :items="teploiz"
             item-text="text"
             item-value="val"
@@ -126,7 +126,7 @@
           <v-select
             dense
             class="inputD"
-            v-model="isx.teploiz_gvs"
+            v-model="atm.teploiz_gvs"
             :items="teploiz"
             item-text="text"
             item-value="val"
@@ -149,7 +149,6 @@
           <v-select
             dense
             class="inputD"
-            v-model="isx.selReg"
             :items="Regions"
             item-text="text"
             item-value="val"
@@ -268,17 +267,24 @@ export default {
 
   computed: {
     ...mapState({
-      isx: state => state.Uu.isx,
+      gen: state => state.Uu.gen,
       atm: state => state.Uu.atm
+      // check: state => state.Uu.check
     })
   },
   watch: {
-    isx: {
-      handler() {
-        this.$store.dispatch("ISX_UU", this.isx);
-      },
-      deep: true
-    },
+    // check: {
+    //   handler() {
+    //     this.$store.dispatch("CHECK_UU", this.check);
+    //   },
+    //   deep: true
+    // },
+    // gen: {
+    //   handler() {
+    //     this.$store.dispatch("GEN_UU", this.gen);
+    //   },
+    //   deep: true
+    // },
     atm: {
       handler() {
         this.$store.dispatch("ATM", this.atm);
