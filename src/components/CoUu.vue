@@ -139,7 +139,7 @@
             class="inputD"
             type="number"
             hide-details
-            v-model.number="flow.G1v"
+            v-model.number="flow.G1s"
             step="1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="6"
@@ -152,7 +152,7 @@
             class="inputD"
             type="number"
             hide-details
-            v-model.number="flow.G2v"
+            v-model.number="flow.G2s"
             disabled
           ></v-text-field>
         </v-col>
@@ -176,7 +176,7 @@
           ></v-select>
         </v-col>
         <v-col cols="3">
-          <v-text-field dense class="inputD" hide-details disabled v-model="di2_text"></v-text-field>
+          <v-text-field dense class="inputD" hide-details disabled v-model="du.di2"></v-text-field>
         </v-col>
       </v-row>
     </v-list-item>
@@ -352,7 +352,7 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="6" v-show="check.sx_ot">
+        <v-col cols="6" v-show="sx.sx_ot">
           <v-select
             dense
             class="inputD"
@@ -448,6 +448,7 @@ export default {
         { text: "К5", val: 5 }
       ],
       dis_filtr: false
+      // no_pr: 1
     };
   },
 
@@ -499,81 +500,86 @@ export default {
       let a = false;
       this.check.tipLo === "ml" ? (a = true) : (a = false);
       return a;
+    },
+    no_pr() {
+      let a, b;
+      this.no_mod ? (a = 1) : (a = 0);
+      this.no_i6 ? (b = 1) : (b = 0);
+      return a + b;
     }
   },
   watch: {
+    no_pr(val) {
+      this.$store.dispatch({ type: "NP", ot: val });
+    },
+
     check: {
-      handler() {
-        this.$store.dispatch("CHECK_CO", this.check);
+      handler(val) {
+        this.$store.dispatch("CHECK_CO", val);
+        this.$store.dispatch("GIDR");
       },
       deep: true
     },
     isx: {
-      handler() {
-        if (this.isx.qco > 0) {
+      handler(val) {
+        if (val.qco > 0) {
           this.$store.dispatch({
             type: "ISX_CO",
-            isx: this.isx,
+            isx: val,
             du: this.du,
             flow: this.flow
           });
         }
-
         this.sx.sx_otkr = 0;
         this.sx.sx_gvs_dep = 0;
         this.check.sx_gvs = 0;
         this.$store.dispatch("SX", this.sx);
         this.$store.dispatch("GEN_UU", this.gen);
+        this.$store.dispatch("GIDR");
+        // this.$store.dispatch({ type: "NP", ot: this.no_pr });
       },
       deep: true
     },
     du: {
-      handler() {
-        if (this.du.di1 == 0) {
-          this.di2_text = "";
+      handler(val) {
+        if (val.di1 == 0) {
           this.$store.dispatch("null_CO");
-        } else if (this.du.di1) {
-          this.du.di2 = this.du.di1;
-          this.du.dut2 = this.du.dut1;
-          this.di2_text = this.DU.find(x => x.val === this.du.di1).text;
+        } else if (val.di1) {
+          val.di2 = val.di1;
           if (this.flow.G1v > 0) {
-            this.V1 = myFns.speed(this.flow.G1v, this.du.di1);
-            this.V2 = myFns.speed(this.flow.G2v, this.du.di2);
-            this.V9 = myFns.speed(this.flow.G9v, this.du.di9);
+            this.V1 = myFns.speed(this.flow.G1v, val.di1);
+            this.V2 = myFns.speed(this.flow.G2v, val.di2);
+            this.V9 = myFns.speed(this.flow.G9v, val.di9);
           } else {
-            this.du.di9 ? "" : (this.du.di9 = this.du.di1);
+            val.di9 ? "" : (val.di9 = val.di1);
           }
-
-          this.diap_t1 = myFns.diap_tr(this.du.di1);
+          this.diap_t1 = myFns.diap_tr(val.di1);
           this.diap_t2 = this.diap_t1;
-          this.diap_t1.find(x => x.val === this.du.dut1)
+          this.diap_t1.find(x => x.val === val.dut1)
             ? ""
-            : ((this.du.dut1 = this.diap_t1[1].val),
+            : ((val.dut1 = this.diap_t1[1].val),
               (this.diap_t2 = this.diap_t1),
-              (this.du.dut2 = this.diap_t1[1].val));
-
-          // if (this.gen.sx_ot) {
-          this.diap_t9 = myFns.diap_tr(this.du.di9);
-          this.diap_t9.find(x => x.val === this.du.dut9)
-            ? this.du.dut9
-            : (this.du.dut9 = this.diap_t9[1].val);
-          // }
-
-          this.$store.dispatch("DU_CO", this.du);
+              (val.dut2 = this.diap_t1[1].val));
+          this.diap_t9 = myFns.diap_tr(val.di9);
+          this.diap_t9.find(x => x.val === val.dut9)
+            ? val.dut9
+            : (val.dut9 = this.diap_t9[1].val);
+          this.$store.dispatch("DU_CO", val);
+          this.$store.dispatch("GIDR");
         }
       },
       deep: true
     },
     flow: {
-      handler() {
-        if (this.flow.G1v > 0 && !this.isx.qco > 0) {
+      handler(val) {
+        if (val.G1s > 0 && !this.isx.qco > 0) {
           this.$store.dispatch({
             type: "ISX_CO",
             isx: this.isx,
             du: this.du,
-            flow: this.flow
+            flow: val
           });
-        } else if (!this.flow.G1v > 0) {
+        } else if (!val.G1s > 0) {
           this.V1 = "";
           this.V2 = "";
           this.V9 = "";

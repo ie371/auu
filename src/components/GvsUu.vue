@@ -569,20 +569,28 @@ export default {
         ? (a = true)
         : (a = false);
       return a;
+    },
+    no_pr() {
+      let a, b, c, d;
+      this.no_mod3 ? (a = 1) : (a = 0);
+      this.no_mod4 ? (b = 1) : (b = 0);
+      this.no_i63 ? (c = 1) : (c = 0);
+      this.no_i64 ? (d = 1) : (d = 0);
+      return a + b + c + d;
     }
   },
   watch: {
+    no_pr(val) {
+      this.$store.dispatch({ type: "NP", gvs: val });
+    },
     sx: {
       handler() {
-        // if (this.isx.qmax > 0) {
         this.sx.sx_gvs_dep > 0
           ? ((this.isx.t3 = 70), (this.isx.t4 = 40))
           : ((this.isx.t3 = 60), (this.isx.t4 = 50));
-
         this.sx.sx_gvs_dep > 0 || this.sx.sx_otkr > 1
           ? (this.dis_dep = false)
           : (this.dis_dep = true);
-
         if (this.isx.qmax > 0) {
           this.$store.dispatch({
             type: "ISX_GVS",
@@ -601,15 +609,15 @@ export default {
         }
         this.$store.dispatch("SX", this.sx);
         this.$store.dispatch("GEN_UU", this.sx);
-        // }
+        this.$store.dispatch("GIDR");
+        // this.$store.dispatch({ type: "NP", gvs: this.no_pr });
       },
       deep: true
     },
     check: {
       handler() {
-        // if (this.isx.qmax > 0) {
         this.$store.dispatch("CHECK_GVS", this.check);
-        // }
+        this.$store.dispatch("GIDR");
       },
       deep: true
     },
@@ -641,7 +649,6 @@ export default {
               flow: {}
             });
           }
-          // this.$store.dispatch("null_GVS");
           this.sx.sx_otkr = 0;
           this.sx.sx_gvs_dep = 0;
           // this.check.sx_gvs = 0;
@@ -650,41 +657,37 @@ export default {
         }
         this.$store.dispatch("SX", this.sx);
         this.$store.dispatch("GEN_UU", this.gen);
+        this.$store.dispatch("GIDR");
       },
       deep: true
     },
     du: {
-      handler() {
-        if (this.du.di3 == 0) {
+      handler(val) {
+        if (val.di3 == 0) {
           this.IL(3);
           this.$store.dispatch("null_GVS");
-        } else if (this.du.di3 && this.du.di3 > 0) {
-          this.V3 = myFns.speed(this.flow.G3v, this.du.di3);
-
-          this.diap_t3 = myFns.diap_tr(this.du.di3);
-          this.diap_t3.find(x => x.val === this.du.dut3)
+        } else if (val.di3 && val.di3 > 0) {
+          val.di3 < val.di4 ? (val.di4 = val.di3) : "";
+          this.V3 = myFns.speed(this.flow.G3v, val.di3);
+          this.diap_t3 = myFns.diap_tr(val.di3);
+          this.diap_t3.find(x => x.val === val.dut3)
             ? ""
-            : (this.du.dut3 = this.diap_t3[1].val);
-
-          if (this.du.di4 > 0) {
-            this.V4 = myFns.speed(this.flow.G4v, this.du.di4);
-            this.diap_t4 = myFns.diap_tr(this.du.di4);
-            this.diap_t4.find(x => x.val === this.du.dut4)
+            : (val.dut3 = this.diap_t3[1].val);
+          if (val.di4 > 0) {
+            this.V4 = myFns.speed(this.flow.G4v, val.di4);
+            this.diap_t4 = myFns.diap_tr(val.di4);
+            this.diap_t4.find(x => x.val === val.dut4)
               ? ""
-              : (this.du.dut4 = this.diap_t4[1].val);
+              : (val.dut4 = this.diap_t4[1].val);
           }
-
-          // if (this.isx.qmax > 0) {
-          if (this.du.di4 > 0) {
+          if (val.di4 > 0) {
             this.check.sx_gvs = 0;
-            // this.IL(3);
           } else {
             this.check.sx_gvs = 1;
             // this.IL(3);
           }
-          // }
-          // this.dis_pep ? (this.tup_gvs = true) : "";
-          this.$store.dispatch("DU_GVS", this.du);
+          this.$store.dispatch("DU_GVS", val);
+          this.$store.dispatch("GIDR");
         }
       },
       deep: true
@@ -698,10 +701,6 @@ export default {
             du: this.du,
             flow: this.flow
           });
-          // this.V3 = myFns.speed(this.flow.G3v, this.du.di3);
-          // this.flow.G4v > 0 && this.check.sx_gvs != 1
-          //   ? (this.V4 = myFns.speed(this.flow.G4v, this.du.di4))
-          //   : (this.V4 = "");
         } else if (!this.flow.G3v > 0) {
           this.flow.G4v = "";
           this.V3 = "";
@@ -720,7 +719,7 @@ export default {
             ? (this.isx.qmax = this.isx.qmax / 1000)
             : this.isx.qmax;
           this.isx.qmax > 0
-            ? (this.isx.qgvssr = (this.isx.qmax / this.isx.Kchn).toFixed(6))
+            ? (this.isx.qgvssr = +(this.isx.qmax / this.isx.Kchn).toFixed(6))
             : (this.isx.qgvssr = "");
           break;
         case "qs":
@@ -728,7 +727,7 @@ export default {
             ? (this.isx.qgvssr = this.isx.qgvssr / 1000)
             : this.isx.qgvssr;
           this.isx.qgvssr > 0
-            ? (this.isx.qmax = (this.isx.qgvssr * this.isx.Kchn).toFixed(6))
+            ? (this.isx.qmax = +(this.isx.qgvssr * this.isx.Kchn).toFixed(6))
             : (this.isx.qmax = "");
           break;
       }

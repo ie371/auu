@@ -18,8 +18,8 @@ export default {
       progr_txv: 0,
       txv_pr: 10
     },
-    flow_co: { G1m: null, G2m: null, G1v: null, G2v: null, G9v: null },
-    flow_gvs: { G3m: null, G4m: null, G3v: null, G4v: null },
+    flow_co: {},
+    flow_gvs: {},
     isx_co: { qco: null, t1: 95, t2: 70, p1: 50, p2: 40 },
     isx_gvs: {
       qmax: null,
@@ -63,12 +63,18 @@ export default {
     du_co: {
       di1: null,
       di2: null,
-      di9: null,
       dut1: null,
       dut2: null,
+      di9: null,
       dut9: null
     },
-    du_gvs: { di3: null, di4: null, dut3: null, dut4: null }
+    du_gvs: { di3: null, di4: null, dut3: null, dut4: null },
+    gdr: {
+      gdr1: {},
+      gdr2: {},
+      gdr3: {},
+      gdr4: {}
+    }
   },
   modules: {},
   getters: {},
@@ -125,9 +131,9 @@ export default {
       Uu.du_co = {
         di1: null,
         di2: null,
-        di9: null,
         dut1: null,
         dut2: null,
+        di9: null,
         dut9: null
       };
     },
@@ -137,13 +143,16 @@ export default {
       Uu.check_gvs.sx_gvs = 0;
       Uu.sx.sx_otkr = 0;
       Uu.sx.sx_gvs_dep = 0;
-      Uu.flow_gvs = { G3m: null, G4m: null, G3v: null, G4v: null };
+      Uu.flow_gvs = {};
       Uu.du_gvs = {
         di3: null,
         di4: null,
         dut3: null,
         dut4: null
       };
+    },
+    mu_gidr(Uu, payload) {
+      Uu.gdr = payload;
     }
   },
   actions: {
@@ -156,89 +165,54 @@ export default {
           ? (payload.isx.qco = payload.isx.qco / 1000)
           : payload.isx.qco / 1;
 
-        let r = myFns.rash_co(
-          payload.isx.qco,
-          payload.isx.t1,
-          payload.isx.t2,
-          payload.isx.p1,
-          payload.isx.p2
-        );
-        payload.flow.G1m = r.r || "";
-        payload.flow.G2m = r.r || "";
-        payload.flow.G1v = r.r1 || "";
-        payload.flow.G2v = r.r2 || "";
-        payload.flow.G9v = (payload.isx.qco * 3.6).toFixed(2);
-
+        payload.flow = myFns.rash_co(payload.isx);
         if (this.state.Uu.sx.sx_gvs_dep > 0) {
-          let f1 = payload.flow.G1m + this.state.Uu.flow_gvs.G3m;
-          // let f2 = payload.flow.G2m + this.state.Uu.flow_gvs.G4m;
-          let pl1 = myFns.ro(payload.isx.t1, payload.isx.p1);
-          let pl2 = myFns.ro(payload.isx.t2, payload.isx.p2);
-          payload.flow.G1v = +((f1 / pl1) * 1000).toFixed(3);
-          payload.flow.G2v = +((f1 / pl2) * 1000).toFixed(3);
+          payload.flow.G1ms = payload.flow.G1m + this.state.Uu.flow_gvs.G3m;
+          payload.flow.G2ms = payload.flow.G1ms;
+          payload.flow.G1s = +(payload.flow.G1ms / payload.flow.PL1).toFixed(3);
+          payload.flow.G2s = +(payload.flow.G1ms / payload.flow.PL2).toFixed(3);
         }
-
         if (this.state.Uu.sx.sx_otkr > 0) {
-          payload.flow.G1v = (
+          payload.flow.G1s = +(
             payload.flow.G1v + this.state.Uu.flow_gvs.G3v
           ).toFixed(3);
-          payload.flow.G2v = (
+          payload.flow.G2s = +(
             payload.flow.G2v + this.state.Uu.flow_gvs.G4v
           ).toFixed(3);
+          payload.flow.G1ms = +(payload.flow.G1s * payload.flow.PL1).toFixed(3);
+          payload.flow.G2ms = +(payload.flow.G2s * payload.flow.PL2).toFixed(3);
         }
       } else {
         payload.flow.G1m = "";
         payload.flow.G2m = "";
-
-        payload.flow.G2v = payload.flow.G1v;
+        payload.flow.G1v = "";
+        payload.flow.G2v = "";
+        payload.flow.G2s = payload.flow.G1s;
         payload.flow.G9v = (payload.flow.G1v * 0.4).toFixed(3);
       }
-
-      p_t1 = myFns.podbor(payload.flow.G1v);
-      p_t2 = myFns.podbor(payload.flow.G2v);
+      p_t1 = myFns.podbor(payload.flow.G1s);
+      p_t2 = myFns.podbor(payload.flow.G2s);
       p_t9 = myFns.podbor(payload.flow.G9v);
-
       payload.du.di1 = p_t1.d || "";
       payload.du.di2 = p_t1.d || "";
       payload.du.dut1 = p_t1.dt || "";
       payload.du.dut2 = p_t1.dt || "";
       payload.du.di9 = p_t9.d || "";
       payload.du.dut9 = p_t9.dt || "";
-
+      context.commit("mu_du_co", payload.du);
       context.commit("mu_isx_co", payload.isx);
       context.commit("mu_flow_co", payload.flow);
-      context.commit("mu_du_co", payload.du);
     },
     ISX_GVS(context, payload) {
       // console.log("RASXOD GVS");
       // console.log(payload);
-      let k, p_t3, p_t4, a, a1, b, b1;
+      let k, p_t3, p_t4;
 
       if (payload.isx.qmax > 0) {
-        a = payload.isx.t3;
-        a1 = payload.isx.txvZ;
-        b = payload.isx.t3;
-        b1 = payload.isx.t4;
-        this.state.Uu.sx.sx_gvs_dep > 0
-          ? ((a1 = payload.isx.t4), (b = this.state.Uu.isx_co.t1), (b1 = 55))
-          : "";
-        this.state.Uu.sx.sx_gvs_dep == 2 ? (k = 0.55) : (k = 1);
-        let r = myFns.rash_gvs(
-          payload.isx.qmax,
-          payload.isx.qgvssr,
-          a,
-          a1,
-          b,
-          b1,
-          payload.isx.p3,
-          payload.isx.p4,
-          payload.isx.ktp,
-          k
-        );
-        payload.flow.G3m = r.r1 || "";
-        payload.flow.G3v = r.r3 || "";
-        payload.flow.G4m = r.r2 || "";
-        payload.flow.G4v = r.r4 || "";
+        let g_dep = this.state.Uu.sx.sx_gvs_dep;
+        let t1;
+        g_dep > 0 ? (t1 = this.state.Uu.isx_co.t1) : "";
+        payload.flow = myFns.rash_gvs(payload.isx, g_dep, t1);
       } else {
         payload.flow.G3m = "";
         payload.flow.G4m = "";
@@ -293,11 +267,6 @@ export default {
       } else {
         payload.tipuu = "";
       }
-      // payload.sx_otkr > 0
-      //   ? payload.sx_gvs_dep > 0
-      //     ? (payload.sx_otkr = 0)
-      //     : ""
-      //   : "";
       context.commit("mu_gen", payload);
     },
     ATM(context, payload) {
@@ -308,6 +277,75 @@ export default {
     },
     null_GVS(context) {
       context.commit("mu_null_GVS");
+    },
+    GIDR(context) {
+      const st = this.state.Uu;
+      let gdr = st.gdr;
+      // function gidr(Gm, Gv, t, p, du_im, du_tr, tipL, filtr, ok, tipIM, PL)
+      if (st.gen.tipuu != "g" && st.isx_co.qco > 0) {
+        gdr.gdr1 = myFns.gidr(
+          st.flow_co.G1ms,
+          st.flow_co.G1s,
+          st.isx_co.t1,
+          st.isx_co.p1,
+          st.du_co.di1,
+          st.du_co.dut1,
+          st.check_co.tipLo,
+          st.check_co.filo,
+          0,
+          st.check_co.tipIMo,
+          st.flow_co.PL1
+        );
+        gdr.gdr2 = myFns.gidr(
+          st.flow_co.G2ms,
+          st.flow_co.G2s,
+          st.isx_co.t2,
+          st.isx_co.p2,
+          st.du_co.di2,
+          st.du_co.dut2,
+          st.check_co.tipLo,
+          st.check_co.filo,
+          0,
+          st.check_co.tipIMo,
+          st.flow_co.PL2
+        );
+      } else {
+        gdr.gdr1 = {};
+        gdr.gdr2 = {};
+      }
+      if (st.gen.tipuu != "o" && st.isx_gvs.qmax > 0) {
+        gdr.gdr3 = myFns.gidr(
+          st.flow_gvs.G3m,
+          st.flow_gvs.G3v,
+          st.isx_gvs.t3,
+          st.isx_gvs.p3,
+          st.du_gvs.di3,
+          st.du_gvs.dut3,
+          st.check_gvs.tipLg3,
+          st.check_gvs.filg,
+          0,
+          st.check_gvs.tipIMg3,
+          st.flow_gvs.PL3
+        );
+        gdr.gdr4 = myFns.gidr(
+          st.flow_gvs.G4m,
+          st.flow_gvs.G4v,
+          st.isx_gvs.t4,
+          st.isx_gvs.p4,
+          st.du_gvs.di4,
+          st.du_gvs.dut4,
+          st.check_gvs.tipLg4,
+          st.check_gvs.filg,
+          st.check_gvs.ok,
+          st.check_gvs.tipIMg4,
+          st.flow_gvs.PL4
+        );
+      } else {
+        gdr.gdr3 = {};
+        gdr.gdr4 = {};
+      }
+      // console.log(gdr);
+      context.commit("mu_gidr", gdr);
     }
   }
 };

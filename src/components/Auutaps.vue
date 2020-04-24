@@ -142,6 +142,7 @@ export default {
     },
     openPDF() {
       let f = document.getElementById("formTS");
+      f.action = "./pdf/project/pr_auu.php";
       let auu = JSON.stringify(this.state_auu);
       let rekv = JSON.stringify(this.state_rekv);
 

@@ -10,13 +10,7 @@
       </v-btn>
     </v-app-bar>
 
-    <form
-      id="formTS"
-      method="post"
-      target="_blank"
-      action="./pdf/project/pr.php"
-      enctype="multipart/form-data"
-    >
+    <form id="formTS" method="post" target="_blank" enctype="multipart/form-data">
       <v-content>
         <router-view />
       </v-content>

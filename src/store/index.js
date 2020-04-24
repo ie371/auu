@@ -6,9 +6,36 @@ import Uu from "@/store/uu";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+    no_proj: true,
+    np: {
+      ot: 0,
+      gvs: 0
+    }
+  },
   modules: { Rekv, Auu, Uu },
   getters: {},
-  mutations: {},
-  actions: {}
+  mutations: {
+    mu_np(state, payload) {
+      state.np = payload;
+    },
+    mu_proj(state, payload) {
+      state.no_proj = payload;
+    }
+  },
+  actions: {
+    NP(context, payload) {
+      let np = this.state.np;
+      Object.prototype.hasOwnProperty.call(payload, "ot")
+        ? (np.ot = payload.ot)
+        : "";
+      Object.prototype.hasOwnProperty.call(payload, "gvs")
+        ? (np.gvs = payload.gvs)
+        : "";
+      context.commit("mu_np", np);
+    },
+    PROJ(context, payload) {
+      context.commit("mu_proj", payload);
+    }
+  }
 });
