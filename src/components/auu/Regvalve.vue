@@ -3,7 +3,7 @@
     <v-list-item dense>
       <v-list-item-content>
         <div>
-          <strong class="blue--text">Регулятор давления "до себя"</strong>
+          <strong class="blue--text">Клапан регулирующий</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -17,8 +17,7 @@
             class="inputD"
             type="number"
             hide-details
-            valid
-            v-model.number="cl_D.dP"
+            v-model.number="cl_R.dP"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="4"
@@ -32,8 +31,7 @@
             class="inputD"
             type="number"
             hide-details
-            valid
-            v-model.number="cl_D.Kv"
+            v-model.number="cl_R.Kv"
           ></v-text-field>
         </v-col>
 
@@ -44,8 +42,7 @@
             class="inputD"
             type="number"
             hide-details
-            valid
-            v-model.number="cl_D.Kvs"
+            v-model.number="cl_R.Kvs"
             @change="change_clp"
           ></v-text-field>
         </v-col>
@@ -53,28 +50,25 @@
         <v-col cols="2">
           <v-text-field
             dense
+            flat
             label="dP факт"
             class="inputD"
             type="number"
             hide-details
-            valid
             readonly
-            v-model.number="cl_D.dP_f"
+            v-model.number="cl_R.dP_f"
           ></v-text-field>
         </v-col>
 
-        <!-- <v-col cols="4"> -->
         <v-layout align-center justify-center>
           <v-switch
             class="inputD mt-0"
-            v-model="cl_D.balans"
-            label="Баланс. клапан"
-            color="deep-orange"
+            v-model="check.filter_t1"
+            label="Фильтр"
+            color="deep-orange "
             hide-details
-            @change="change_clp"
           ></v-switch>
         </v-layout>
-        <!-- </v-col> -->
       </v-row>
     </v-list-item>
 
@@ -84,25 +78,24 @@
           <v-select
             dense
             hide-details
-            :items="clap"
+            :items="clap_R"
             label="Производ"
             class="inputD"
-            v-model="cl_D.zavod"
+            v-model="cl_R.zavod"
             @change="change_clp"
           ></v-select>
         </v-col>
 
         <v-col cols="2">
-          <v-text-field
+          <v-select
             dense
-            label="Диапазон"
-            class="inputD"
-            type="text"
             hide-details
-            valid
-            v-model="cl_D.diap"
+            :items="tip_cl"
+            label="Тип"
+            class="inputD"
+            v-model.number="cl_R.tip"
             @change="change_clp"
-          ></v-text-field>
+          ></v-select>
         </v-col>
 
         <v-col cols="2">
@@ -112,7 +105,9 @@
             :items="DU"
             label="Ду"
             class="inputD"
-            v-model.number="cl_D.du"
+            item-text="text"
+            item-value="val"
+            v-model.number="cl_R.du"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -128,9 +123,8 @@
             class="inputD"
             type="text"
             hide-details
-            valid
             clearable
-            v-model="cl_D.spec_name"
+            v-model="cl_R.spec_name"
           ></v-text-field>
         </v-col>
 
@@ -141,9 +135,34 @@
             class="inputD"
             type="text"
             hide-details
-            valid
-            v-model="cl_D.obozn"
+            v-model="cl_R.obozn"
             @change="change_clp"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </v-list-item>
+
+    <v-list-item dense>
+      <v-row align="center" justify="space-between" dense>
+        <v-col cols="9">
+          <v-text-field
+            dense
+            label="Привод"
+            class="inputD"
+            type="text"
+            hide-details
+            v-model="cl_drive.spec_name"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="3">
+          <v-text-field
+            dense
+            label="обозначение"
+            class="inputD"
+            type="text"
+            hide-details
+            v-model="cl_drive.obozn"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -158,7 +177,17 @@ export default {
   data() {
     return {
       DU,
-      clap: ["Теплосила", "Danfoss", "Siemens", "Broen"]
+      clap_R: ["Danfoss", "Siemens", "Broen"],
+      tip_cl: [
+        {
+          text: "2-x",
+          value: 2
+        },
+        {
+          text: "3-x",
+          value: 3
+        }
+      ]
     };
   },
 
@@ -166,43 +195,49 @@ export default {
     ...mapState({
       isx: state => state.Auu.isx,
       check: state => state.Auu.check,
-      cl_D: state => state.Auu.cl_D
+      cl_R: state => state.Auu.cl_R,
+      cl_drive: state => state.Auu.cl_drive
     })
   },
   watch: {
     isx: {
       handler() {
-        this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
-        this.$store.dispatch("CL_DOS", this.cl_D);
+        this.cl_R.Kv = myFns.Kv(this.check.G1, this.cl_R.dP);
+        this.$store.dispatch("CL_REG", this.cl_R);
       },
       deep: true
     },
-    cl_D: {
+    cl_R: {
       handler() {
-        this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
+        this.cl_R.Kv = myFns.Kv(this.check.G1, this.cl_R.dP);
 
-        this.cl_D.Kvs
-          ? (this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs))
-          : (this.cl_D.dP_f = "");
+        this.cl_R.Kvs
+          ? (this.cl_R.dP_f = myFns.dP_fact(this.check.G1, this.cl_R.Kvs))
+          : (this.cl_R.dP_f = "");
 
-        this.cl_D.enable ? (this.cl_D.kolvo = 1) : (this.cl_D.kolvo = 0);
-        this.$store.dispatch("CL_DOS", this.cl_D);
+        this.cl_R.zavod
+          ? (this.cl_drive.zavod = this.cl_R.zavod)
+          : (this.cl_drive.zavod = "");
+        this.$store.dispatch("CL_REG", this.cl_R);
+      },
+      deep: true
+    },
+    cl_drive: {
+      handler() {
+        this.$store.dispatch("CL_DRI", this.cl_drive);
       },
       deep: true
     }
   },
   methods: {
     change_clp() {
-      let n;
-      let x;
-      this.cl_D.balans
-        ? ((n = "Клапан балансировочный "), (x = ""))
-        : ((n = "Регулятор давления 'до себя' "),
-          (x = ", диапазон настройки " + this.cl_D.diap + " бар"));
-      let f = this.cl_D.zavod;
-      let d = this.cl_D.du;
-      let k = this.cl_D.Kvs;
-      this.cl_D.spec_name = n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч" + x;
+      let n = "Клапан регулирующий ";
+      let t = this.cl_R.tip;
+      let f = this.cl_R.zavod;
+      let d = this.cl_R.du;
+      let k = this.cl_R.Kvs;
+      this.cl_R.spec_name =
+        n + t + "-х ходовой " + f + ", Ду" + d + ", Kvs=" + k + " м³/ч";
     }
   }
 };

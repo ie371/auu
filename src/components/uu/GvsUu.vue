@@ -99,11 +99,10 @@
             dense
             label="Qmax, Гкал/ч"
             class="inputD"
-            type="number"
             hide-details
             v-model.number="isx.qmax"
             v-on:input="qgvs('qm')"
-            step="0.1"
+            step="0.0000001"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="8"
           ></v-text-field>
@@ -113,11 +112,10 @@
             dense
             label="Qср, Гкал/ч"
             class="inputD"
-            type="number"
             hide-details
             v-model.number="isx.qgvssr"
             v-on:input="qgvs('qs')"
-            step="0.1"
+            step="0.0000001"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="8"
           ></v-text-field>
@@ -408,6 +406,7 @@
           <v-select
             dense
             class="inputD"
+            :class="{'errs' : no_grz }"
             v-model="check.filg"
             :items="tip_filtr"
             item-text="text"
@@ -415,6 +414,7 @@
             label="Фильтр"
             hide-details
             :disabled="no_filter"
+            :append-icon="no_grz ? 'mdi-alert-rhombus-outline' : undefined"
           ></v-select>
         </v-col>
         <v-layout align-center justify-center v-show="tup">
@@ -423,11 +423,9 @@
             class="inputD mt-0"
             v-model.number="check.ok"
             label="Обратный клапан"
-            color="deep-orange"
             hide-details
           ></v-switch>
         </v-layout>
-
         <v-col cols="6"></v-col>
       </v-row>
     </v-list-item>
@@ -544,6 +542,17 @@ export default {
         : (a = false);
       return a;
     },
+    no_grz() {
+      let a = false;
+      let b = false;
+      let c = false;
+      this.check.filg == 2 && this.du.dut3 < 33 ? (a = true) : (a = false);
+      this.check.filg == 2 && this.du.dut4 < 33 && this.check.sx_gvs == 0
+        ? (b = true)
+        : (b = false);
+      a || b ? (c = true) : (c = false);
+      return c;
+    },
     yellow_im4() {
       let a;
       this.check.tipIMg4 != this.check.tipIMg3 ? (a = true) : (a = false);
@@ -571,12 +580,17 @@ export default {
       return a;
     },
     no_pr() {
-      let a, b, c, d;
+      let a, b, c, d, e;
       this.no_mod3 ? (a = 1) : (a = 0);
       this.no_mod4 ? (b = 1) : (b = 0);
       this.no_i63 ? (c = 1) : (c = 0);
       this.no_i64 ? (d = 1) : (d = 0);
-      return a + b + c + d;
+      this.no_grz ? (e = 1) : (e = 0);
+      this.sx.sx_gvs_dep > 0
+        ? ((a = 0), (b = 0), (c = 0), (d = 0), (e = 0))
+        : "";
+      this.check.sx_gvs > 0 ? ((b = 0), (d = 0)) : "";
+      return a + b + c + d + e;
     }
   },
   watch: {
@@ -608,7 +622,7 @@ export default {
           });
         }
         this.$store.dispatch("SX", this.sx);
-        this.$store.dispatch("GEN_UU", this.sx);
+        this.$store.dispatch("GEN_UU", this.gen);
         this.$store.dispatch("GIDR");
         // this.$store.dispatch({ type: "NP", gvs: this.no_pr });
       },

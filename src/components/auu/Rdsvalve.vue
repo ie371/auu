@@ -3,7 +3,7 @@
     <v-list-item dense>
       <v-list-item-content>
         <div>
-          <strong class="blue--text">Регулятор перепада давления</strong>
+          <strong class="blue--text">Регулятор давления "до себя"</strong>
         </div>
       </v-list-item-content>
     </v-list-item>
@@ -17,7 +17,8 @@
             class="inputD"
             type="number"
             hide-details
-            v-model.number="cl_P.dP"
+            valid
+            v-model.number="cl_D.dP"
             step="0.1"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="4"
@@ -31,7 +32,8 @@
             class="inputD"
             type="number"
             hide-details
-            v-model.number="cl_P.Kv"
+            valid
+            v-model.number="cl_D.Kv"
           ></v-text-field>
         </v-col>
 
@@ -42,7 +44,8 @@
             class="inputD"
             type="number"
             hide-details
-            v-model.number="cl_P.Kvs"
+            valid
+            v-model.number="cl_D.Kvs"
             @change="change_clp"
           ></v-text-field>
         </v-col>
@@ -54,10 +57,24 @@
             class="inputD"
             type="number"
             hide-details
+            valid
             readonly
-            v-model.number="cl_P.dP_f"
+            v-model.number="cl_D.dP_f"
           ></v-text-field>
         </v-col>
+
+        <!-- <v-col cols="4"> -->
+        <v-layout align-center justify-center>
+          <v-switch
+            class="inputD mt-0"
+            v-model="cl_D.balans"
+            label="Баланс. клапан"
+            color="deep-orange"
+            hide-details
+            @change="change_clp"
+          ></v-switch>
+        </v-layout>
+        <!-- </v-col> -->
       </v-row>
     </v-list-item>
 
@@ -67,10 +84,10 @@
           <v-select
             dense
             hide-details
-            :items="clap_P"
+            :items="clap"
             label="Производ"
             class="inputD"
-            v-model="cl_P.zavod"
+            v-model="cl_D.zavod"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -82,7 +99,8 @@
             class="inputD"
             type="text"
             hide-details
-            v-model="cl_P.diap"
+            valid
+            v-model="cl_D.diap"
             @change="change_clp"
           ></v-text-field>
         </v-col>
@@ -94,7 +112,9 @@
             :items="DU"
             label="Ду"
             class="inputD"
-            v-model.number="cl_P.du"
+            item-text="text"
+            item-value="val"
+            v-model.number="cl_D.du"
             @change="change_clp"
           ></v-select>
         </v-col>
@@ -110,8 +130,9 @@
             class="inputD"
             type="text"
             hide-details
+            valid
             clearable
-            v-model="cl_P.spec_name"
+            v-model="cl_D.spec_name"
           ></v-text-field>
         </v-col>
 
@@ -122,7 +143,8 @@
             class="inputD"
             type="text"
             hide-details
-            v-model="cl_P.obozn"
+            valid
+            v-model="cl_D.obozn"
             @change="change_clp"
           ></v-text-field>
         </v-col>
@@ -138,7 +160,7 @@ export default {
   data() {
     return {
       DU,
-      clap_P: ["Теплосила", "Danfoss", "Siemens", "Broen"]
+      clap: ["Теплосила", "Danfoss", "Siemens", "Broen"]
     };
   },
 
@@ -146,49 +168,43 @@ export default {
     ...mapState({
       isx: state => state.Auu.isx,
       check: state => state.Auu.check,
-      cl_P: state => state.Auu.cl_P
+      cl_D: state => state.Auu.cl_D
     })
   },
   watch: {
     isx: {
       handler() {
-        this.cl_P.Kv = myFns.Kv(this.check.G1, this.cl_P.dP);
-        this.$store.dispatch("CL_PER", this.cl_P);
+        this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
+        this.$store.dispatch("CL_DOS", this.cl_D);
       },
       deep: true
     },
-
-    cl_P: {
+    cl_D: {
       handler() {
-        this.cl_P.Kv = +myFns.Kv(this.check.G1, this.cl_P.dP);
+        this.cl_D.Kv = myFns.Kv(this.check.G1, this.cl_D.dP);
 
-        this.cl_P.Kvs
-          ? (this.cl_P.dP_f = myFns.dP_fact(this.check.G1, this.cl_P.Kvs))
-          : (this.cl_P.dP_f = "");
+        this.cl_D.Kvs
+          ? (this.cl_D.dP_f = myFns.dP_fact(this.check.G1, this.cl_D.Kvs))
+          : (this.cl_D.dP_f = "");
 
-        this.cl_P.enable ? (this.cl_P.kolvo = 1) : (this.cl_P.kolvo = 0);
-        this.$store.dispatch("CL_PER", this.cl_P);
+        this.cl_D.enable ? (this.cl_D.kolvo = 1) : (this.cl_D.kolvo = 0);
+        this.$store.dispatch("CL_DOS", this.cl_D);
       },
       deep: true
     }
   },
   methods: {
     change_clp() {
-      let n = "Регулятор перепада давления ";
-      let diap = this.cl_P.diap;
-      let f = this.cl_P.zavod;
-      let d = this.cl_P.du;
-      let k = this.cl_P.Kvs;
-      this.cl_P.spec_name =
-        n +
-        f +
-        ", Ду" +
-        d +
-        ", Kvs=" +
-        k +
-        " м³/ч, диапазон настройки " +
-        diap +
-        " бар";
+      let n;
+      let x;
+      this.cl_D.balans
+        ? ((n = "Клапан балансировочный "), (x = ""))
+        : ((n = "Регулятор давления 'до себя' "),
+          (x = ", диапазон настройки " + this.cl_D.diap + " бар"));
+      let f = this.cl_D.zavod;
+      let d = this.cl_D.du;
+      let k = this.cl_D.Kvs;
+      this.cl_D.spec_name = n + f + ", Ду" + d + ", Kvs=" + k + " м³/ч" + x;
     }
   }
 };

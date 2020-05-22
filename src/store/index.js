@@ -3,24 +3,29 @@ import Vuex from "vuex";
 import Rekv from "@/store/rekv";
 import Auu from "@/store/auu";
 import Uu from "@/store/uu";
+import UuHvs from "@/store/uuhvs";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    no_proj: true,
+    no_proj_ts: true,
+    no_proj_hvs: true,
     np: {
       ot: 0,
       gvs: 0
     }
   },
-  modules: { Rekv, Auu, Uu },
+  modules: { Rekv, Auu, Uu, UuHvs },
   getters: {},
   mutations: {
     mu_np(state, payload) {
       state.np = payload;
     },
     mu_proj(state, payload) {
-      state.no_proj = payload;
+      state.no_proj_ts = payload;
+    },
+    mu_proj_hvs(state, payload) {
+      state.no_proj_hvs = payload;
     }
   },
   actions: {
@@ -36,6 +41,9 @@ export default new Vuex.Store({
     },
     PROJ(context, payload) {
       context.commit("mu_proj", payload);
+    },
+    PROJ_HVS(context, payload) {
+      context.commit("mu_proj_hvs", payload);
     }
   }
 });

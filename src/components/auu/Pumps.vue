@@ -17,6 +17,7 @@
             label="Насос на перемычке"
             color="indigo"
             hide-details
+            @change="change_flow"
           ></v-switch>
         </v-layout>
 
@@ -36,6 +37,15 @@
             v-model="pumps.two_pumps"
             :disabled="double_dis"
             label="2 насоса"
+            color="indigo"
+            hide-details
+          ></v-switch>
+        </v-layout>
+        <v-layout align-center justify-center>
+          <v-switch
+            class="inputD mt-0"
+            v-model="pumps.taps"
+            label="Обвязка кранами"
             color="indigo"
             hide-details
           ></v-switch>
@@ -133,6 +143,8 @@
             :items="DU"
             label="Ду"
             class="inputD"
+            item-text="text"
+            item-value="val"
             v-model="pumps.du"
             @change="change_pump"
           ></v-select>
@@ -141,9 +153,19 @@
         <v-layout align-center justify-center>
           <v-switch
             class="inputD mt-0"
-            v-model="pumps.taps"
-            label="Обвязка кранами"
-            color="deep-orange "
+            v-model="pumps.freq"
+            label="частотн"
+            color="deep-orange"
+            hide-details
+          ></v-switch>
+        </v-layout>
+
+        <v-layout align-center justify-center>
+          <v-switch
+            class="inputD mt-0"
+            v-model="pumps.phases"
+            label="3-ф"
+            color="deep-orange"
             hide-details
           ></v-switch>
         </v-layout>
@@ -216,13 +238,8 @@ export default {
       deep: true
     },
 
-    pumps: {
+    perem: {
       handler() {
-        this.pumps.double
-          ? ((this.double_dis = true), (this.pumps.two_pumps = false))
-          : (this.double_dis = false);
-
-        this.pumps.two_pumps ? (this.pumps.kolvo = 2) : (this.pumps.kolvo = 1);
         this.pumps.G = myFns.G_pump(
           this.check.G1,
           this.pumps.kf,
@@ -230,6 +247,18 @@ export default {
           this.pumps.perem
         );
 
+        this.$store.dispatch("PUMPS", this.pumps);
+        this.$store.dispatch("STAND");
+      }
+    },
+
+    pumps: {
+      handler() {
+        this.pumps.double
+          ? ((this.double_dis = true), (this.pumps.two_pumps = false))
+          : (this.double_dis = false);
+
+        this.pumps.two_pumps ? (this.pumps.kolvo = 2) : (this.pumps.kolvo = 1);
         this.$store.dispatch("PUMPS", this.pumps);
         this.$store.dispatch("STAND");
       },
@@ -252,13 +281,23 @@ export default {
         f +
         ", Ду" +
         d +
-        ", G =" +
+        ", G = " +
         g +
-        " м³/ч , H = " +
+        "м³/ч, H = " +
         h +
-        " м.в.ст., P = " +
+        "м.в.ст., P = " +
         w +
-        " кВт";
+        "кВт";
+    },
+    change_flow() {
+      this.pumps.G = myFns.G_pump(
+        this.check.G1,
+        this.pumps.kf,
+        this.check.u,
+        this.pumps.perem
+      );
+      this.$store.dispatch("PUMPS", this.pumps);
+      this.change_pump();
     }
   }
 };

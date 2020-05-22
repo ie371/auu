@@ -2,7 +2,7 @@ import * as myFns from "@/utils/FuncUu.js";
 export default {
   state: {
     gen: { tipuu: "", tipkp: "", IL: false },
-    sx: { sx_otkr: 0, sx_gvs_dep: 0, sx_ot: false },
+    sx: { sx_otkr: 0, sx_gvs_dep: 0 },
     atm: {
       tipSB: 0,
       pltr: ["gsm", "usba"],
@@ -12,11 +12,12 @@ export default {
       met_ruk: 0,
       teploiz_ot: 0,
       teploiz_gvs: 0,
-      selReg: 0,
-      mess: [],
-      indexnas: "",
       progr_txv: 0,
-      txv_pr: 10
+      txv_pr: 10,
+      region: 0,
+      naspunkt: {},
+      psA2: false,
+      plA2: false,
     },
     flow_co: {},
     flow_gvs: {},
@@ -33,9 +34,10 @@ export default {
       t3: 60,
       t4: 50,
       p3: 50,
-      p4: 40
+      p4: 40,
     },
     check_co: {
+      sx_ot: false,
       fuCo: 0,
       tipLo: "kl",
       tipLp: "kl",
@@ -47,7 +49,7 @@ export default {
       t_srez: "",
       otmetka_T1: "",
       otmetka_T2: "",
-      otmetka_T9: ""
+      otmetka_T9: "",
     },
     check_gvs: {
       sx_gvs: 0,
@@ -58,7 +60,7 @@ export default {
       ok: 0,
       filg: 0,
       otmetka_T3: "",
-      otmetka_T4: ""
+      otmetka_T4: "",
     },
     du_co: {
       di1: null,
@@ -66,15 +68,22 @@ export default {
       dut1: null,
       dut2: null,
       di9: null,
-      dut9: null
+      dut9: null,
     },
     du_gvs: { di3: null, di4: null, dut3: null, dut4: null },
     gdr: {
       gdr1: {},
       gdr2: {},
       gdr3: {},
-      gdr4: {}
-    }
+      gdr4: {},
+    },
+    dop: {
+      truba_dop: "",
+      tpl_dop: "",
+      perehod_dop: "",
+      otvod_dop: "",
+      kozuh: 0,
+    },
   },
   modules: {},
   getters: {},
@@ -125,7 +134,7 @@ export default {
         t1: 95,
         t2: 70,
         p1: 50,
-        p2: 40
+        p2: 40,
       };
       Uu.flow_co = {};
       Uu.du_co = {
@@ -134,7 +143,7 @@ export default {
         dut1: null,
         dut2: null,
         di9: null,
-        dut9: null
+        dut9: null,
       };
     },
     mu_null_GVS(Uu) {
@@ -148,12 +157,15 @@ export default {
         di3: null,
         di4: null,
         dut3: null,
-        dut4: null
+        dut4: null,
       };
     },
     mu_gidr(Uu, payload) {
       Uu.gdr = payload;
-    }
+    },
+    mu_DOP(Uu, payload) {
+      Uu.dop = payload;
+    },
   },
   actions: {
     ISX_CO(context, payload) {
@@ -327,25 +339,32 @@ export default {
           st.check_gvs.tipIMg3,
           st.flow_gvs.PL3
         );
-        gdr.gdr4 = myFns.gidr(
-          st.flow_gvs.G4m,
-          st.flow_gvs.G4v,
-          st.isx_gvs.t4,
-          st.isx_gvs.p4,
-          st.du_gvs.di4,
-          st.du_gvs.dut4,
-          st.check_gvs.tipLg4,
-          st.check_gvs.filg,
-          st.check_gvs.ok,
-          st.check_gvs.tipIMg4,
-          st.flow_gvs.PL4
-        );
+        if (st.check_gvs.sx_gvs == 0) {
+          gdr.gdr4 = myFns.gidr(
+            st.flow_gvs.G4m,
+            st.flow_gvs.G4v,
+            st.isx_gvs.t4,
+            st.isx_gvs.p4,
+            st.du_gvs.di4,
+            st.du_gvs.dut4,
+            st.check_gvs.tipLg4,
+            st.check_gvs.filg,
+            st.check_gvs.ok,
+            st.check_gvs.tipIMg4,
+            st.flow_gvs.PL4
+          );
+        } else {
+          gdr.gdr4 = {};
+        }
       } else {
         gdr.gdr3 = {};
         gdr.gdr4 = {};
       }
       // console.log(gdr);
       context.commit("mu_gidr", gdr);
-    }
-  }
+    },
+    DOP(context, payload) {
+      context.commit("mu_DOP", payload);
+    },
+  },
 };

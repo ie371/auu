@@ -8,20 +8,20 @@ export default {
       t11: 95,
       t21: 70,
       p1: 65,
-      p2: 45
+      p2: 45,
     },
     check: {
       G1: "",
       G2: "",
       G3: "",
       u: "",
-      duT1: "",
-      duT11: "",
-      duT3: "",
+      dut1: "",
+      dut11: "",
+      dut3: "",
       v1: "",
       v2: "",
       resis: "",
-      filter_t1: false
+      filter_t1: false,
     },
     cl_R: {
       dP: 0.5,
@@ -33,13 +33,14 @@ export default {
       spec_name: "",
       obozn: "",
       zavod: "",
-      kolvo: 1
+      kolvo: 1,
+      suf: "clr",
     },
     cl_drive: {
       spec_name: "Электропривод клапана ",
       obozn: "",
       zavod: "",
-      kolvo: 1
+      kolvo: 1,
     },
     cl_P: {
       enable: false,
@@ -52,7 +53,8 @@ export default {
       obozn: "",
       zavod: "",
       du: "",
-      kolvo: 0
+      kolvo: 0,
+      suf: "clp",
     },
     cl_D: {
       enable: false,
@@ -66,12 +68,15 @@ export default {
       obozn: "",
       zavod: "",
       du: "",
-      kolvo: 0
+      kolvo: 0,
+      suf: "cld",
     },
     pumps: {
       two_pumps: true,
       double: false,
       perem: false,
+      freq: false,
+      phases: false,
       G: "",
       h: "",
       resis: "",
@@ -82,9 +87,10 @@ export default {
       spec_name: "",
       obozn: "",
       kolvo: "",
-      taps: false
+      taps: false,
+      suf: "pump",
     },
-    spec: []
+    spec: [],
   },
   modules: {},
   getters: {},
@@ -115,7 +121,7 @@ export default {
     },
     mu_spec_rem(Auu, payload) {
       Auu.spec = [];
-    }
+    },
   },
   actions: {
     ISX_AUU(context, payload) {
@@ -149,53 +155,67 @@ export default {
       context.commit("mu_spec_rem");
       const st = this.state.Auu;
       class El {
-        constructor(text, type, du, quantity) {
+        constructor(text, type, du, quantity, suf) {
           this.text = text;
           this.type = type;
           this.du = du;
           this.quantity = quantity;
+          this.suf = suf;
         }
       }
-      let x, du_;
+      let x, v, du_;
       let _ee = [];
-      _ee.push(new El("Кран", "tapLD", st.check.duT1, 2));
-      _ee.push(new El("Кран", "tapLD", st.check.duT11, 2));
-      st.pumps.perem
-        ? (du_ = st.check.duT3)
-        : ((du_ = st.check.duT11), _ee.push(new El("Кран", "tapLD", 50, 1)));
+      _ee.push(new El("Кран", "tapLD", st.check.dut1, 2, "kr_t1"));
+      _ee.push(new El("Кран", "tapLD", st.check.dut11, 2, "kr_t11"));
+      st.pumps.perem ? (du_ = st.check.dut3) : (du_ = st.check.dut11);
       st.pumps.two_pumps ? (x = 4) : st.pumps.perem ? (x = 2) : (x = 0);
+
       if (x > 0) {
         st.pumps.taps
-          ? _ee.push(new El("Кран", "tapLD", du_, x))
-          : _ee.push(new El("Затвор", "zatv", du_, x));
+          ? _ee.push(new El("Кран", "tapLD", du_, x, "kr_pu"))
+          : _ee.push(new El("Затвор", "zatv", du_, x, "zatv"));
       }
       st.pumps.perem
         ? st.pumps.two_pumps
-          ? _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 2))
-          : _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1))
+          ? _ee.push(new El("Обратный клапан", "ok", st.check.dut3, 2, "ok_t3"))
+          : _ee.push(new El("Обратный клапан", "ok", st.check.dut3, 1, "ok_t3"))
         : st.pumps.two_pumps
-        ? (_ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1)),
-          _ee.push(new El("Обратный клапан", "ok", st.check.duT11, 2)))
-        : _ee.push(new El("Обратный клапан", "ok", st.check.duT3, 1));
-      st.pumps.perem ? du_ : _ee.push(new El("Обратный клапан", "ok", 50, 1));
+        ? (_ee.push(new El("Обратный клапан", "ok", st.check.dut3, 1, "ok_t3")),
+          _ee.push(
+            new El("Обратный клапан", "ok", st.check.dut11, 2, "ok_t11")
+          ))
+        : _ee.push(new El("Обратный клапан", "ok", st.check.dut3, 1, "ok_t3"));
 
-      _ee.push(new El("Фильтр", "filt", st.check.duT11, 1));
+      st.pumps.two_pumps ? (v = 4) : (v = 2);
+      _ee.push(new El("Виброкомпенсатор", "vibro", du_, v, "vib"));
+
+      !st.pumps.perem || st.cl_D.enable
+        ? (_ee.push(new El("Обратный клапан", "ok", 50, 1, "ok_zap")),
+          _ee.push(new El("Кран", "tapLD", 50, 1, "kr_zap")))
+        : du_;
+
+      _ee.push(new El("Фильтр", "filt", st.check.dut11, 1, "fil_t11"));
       st.check.filter_t1
-        ? _ee.push(new El("Фильтр", "filt", st.check.duT1, 1))
+        ? _ee.push(new El("Фильтр", "filt", st.check.dut1, 1, "fil_t1"))
         : "";
-
-      const result = _ee.reduce(function(acc, val) {
+      const result = _ee.reduce(function (acc, val) {
         let o = acc
-          .filter(function(obj) {
+          .filter(function (obj) {
             return obj.type == val.type && obj.du == val.du;
           })
-          .pop() || { text: val.text, type: val.type, du: val.du, quantity: 0 };
+          .pop() || {
+          text: val.text,
+          type: val.type,
+          du: val.du,
+          quantity: 0,
+          suf: val.suf,
+        };
         o.quantity += val.quantity;
         acc.push(o);
         return acc;
       }, []);
       const uniq = Array.from(new Set(result));
       context.commit("mu_spec", uniq);
-    }
-  }
+    },
+  },
 };

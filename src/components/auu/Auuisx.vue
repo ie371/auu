@@ -188,7 +188,7 @@
         <v-col cols="5">
           <v-text-field
             dense
-            label="G3, м³/ч"
+            label="G подмес, м³/ч"
             class="inputD"
             type="number"
             hide-details
@@ -221,7 +221,7 @@
             item-value="val"
             hide-details
             :items="DU"
-            v-model.number="check.duT1"
+            v-model.number="check.dut1"
           ></v-select>
         </v-col>
         <v-col cols="5">
@@ -233,7 +233,7 @@
             item-value="val"
             hide-details
             :items="DU"
-            v-model.number="check.duT11"
+            v-model.number="check.dut11"
           ></v-select>
         </v-col>
       </v-row>
@@ -273,17 +273,17 @@
             dense
             hide-details
             :items="DU"
-            label="ДуТ3"
+            label="Ду перемычки"
             class="inputD"
             item-text="text"
             item-value="val"
-            v-model.number="check.duT3"
+            v-model.number="check.dut3"
           ></v-select>
         </v-col>
         <v-col cols="5">
           <v-text-field
             dense
-            label="V3, м/c"
+            label="V подмес, м/c"
             class="inputD"
             type="number"
             hide-details
@@ -334,13 +334,13 @@ export default {
         this.check.u =
           (this.isx.t1 - this.isx.t11) / (this.isx.t11 - this.isx.t2);
 
-        this.check.duT1 = myFns.dutr(
+        this.check.dut1 = myFns.dutr(
           this.check.G1,
           this.isx.t1,
           this.isx.p1,
           1.5
         );
-        this.check.duT11 = myFns.dutr(
+        this.check.dut11 = myFns.dutr(
           this.check.G2,
           this.isx.t11,
           this.isx.p1,
@@ -348,8 +348,8 @@ export default {
         );
 
         this.isx.t1 > 105
-          ? (this.check.duT3 = this.check.duT11)
-          : (this.check.duT3 = this.check.duT1);
+          ? (this.check.dut3 = this.check.dut11)
+          : (this.check.dut3 = this.check.dut1);
 
         this.check.resis = (this.isx.floor * 3 + 12) / 10;
         this.check.resis < 5 ? (this.check.resis = 5) : this.check.resis;
@@ -359,9 +359,9 @@ export default {
     },
     check: {
       handler() {
-        this.check.v1 = myFns.speed(this.check.G1, this.check.duT1);
-        this.check.v2 = myFns.speed(this.check.G2, this.check.duT11);
-        this.check.v3 = myFns.speed(this.check.G3, this.check.duT3);
+        this.check.v1 = myFns.speed(this.check.G1, this.check.dut1);
+        this.check.v2 = myFns.speed(this.check.G2, this.check.dut11);
+        this.check.v3 = myFns.speed(this.check.G3, this.check.dut3);
         this.$store.dispatch("CHECK", this.check);
         this.$store.dispatch("STAND");
       },

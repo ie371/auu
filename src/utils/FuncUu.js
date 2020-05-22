@@ -61,13 +61,20 @@ export function rash_gvs(isx, d_dep, t1) {
   let { Kchn, beta, knp, ktp, p3, p4, qgvssr, qmax, t3, t4, txvL, txvZ } = isx;
   let koef = 1;
   let tt3 = "";
-  d_dep > 0 ? ((tt3 = t1), (txvL = t4), (txvZ = t4)) : (tt3 = t3);
+  let tt4 = "";
+  d_dep > 0
+    ? ((tt3 = t1), (tt4 = 55), (txvL = t4), (txvZ = t4))
+    : ((tt3 = t3), (tt4 = t4));
   d_dep == 2 ? (koef = 0.55) : "";
+
+  // function rashgvs_cirk(Qgvsmax,t3,t4,Kchn,txvL,txvZ,koef,t1,Ktp,Knp,beta) {
+  // Gg = rashgvs_cirk(qmax, t3, 55, Kchn, t4, t4, koef, t1, ktp, knp, beta);
+
   let G3m = +((koef * qmax * 1000) / (t3 - txvZ)).toFixed(3); //*
   let Qgvscirkz = +((ktp * qgvssr) / (1 + ktp)).toFixed(6);
-  let G4m = +((Qgvscirkz * 1000) / (tt3 - t4)).toFixed(3);
+  let G4m = +((Qgvscirkz * 1000) / (tt3 - tt4)).toFixed(3);
   let PL3 = +ro(tt3, p3);
-  let PL4 = +ro(t4, p4);
+  let PL4 = +ro(tt4, p4);
   let G3v = +(G3m / PL3).toFixed(3);
   let G4v = +(G4m / PL4).toFixed(3);
   let Ggvssr = +((koef * qgvssr * 1000) / (t3 - txvZ)).toFixed(3);
@@ -76,7 +83,7 @@ export function rash_gvs(isx, d_dep, t1) {
   let Qgvssrl = +(Qgvsmaxl / Kchn).toFixed(6);
   let Ggvssrl = +((Qgvssrl * 1000) / (t3 - txvL)).toFixed(3);
   let Qgvscirkl = +((ktp * Qgvssrl) / (1 + ktp)).toFixed(6);
-  let Ggvscirkl = +((beta * Qgvscirkl * 1000) / (t3 - t4)).toFixed(3);
+  let Ggvscirkl = +((beta * Qgvscirkl * 1000) / (t3 - tt4)).toFixed(3); //????????????
   let Ggvscirklmax = +(Ggvscirkl * 1.5).toFixed(3);
   let Ggvscirklmin = +(Ggvscirkl * 0.4).toFixed(3);
   return {
@@ -91,6 +98,7 @@ export function rash_gvs(isx, d_dep, t1) {
     Qgvssrl,
     Ggvssrl,
     Qgvscirkl,
+    Ggvscirkl,
     Ggvscirklmax,
     Ggvscirklmin,
     PL3,

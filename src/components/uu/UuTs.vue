@@ -10,24 +10,22 @@
       <v-col cols="12" md="6" lg="3">
         <gvs-uu></gvs-uu>
       </v-col>
-      <v-col cols="12" md="6" lg="2">
+      <v-col cols="12" md="6" lg="3">
         <but-uu></but-uu>
       </v-col>
-      <v-btn color="blue" dark fixed bottom right fab @click="openPDF" :disabled="no_proj">
-        <v-icon color="white">mdi-octagram-outline</v-icon>
-      </v-btn>
     </v-row>
+    <v-btn color="red" fixed dark bottom right fab @click="openPDF" :disabled="no_proj">
+      <v-icon color="white">mdi-octagram-outline</v-icon>
+    </v-btn>
   </v-container>
 </template>
 
-
-
 <script>
 import { mapState } from "vuex";
-import AtmUu from "@/components/AtmUu.vue";
-import CoUu from "@/components/CoUu.vue";
-import GvsUu from "@/components/GvsUu.vue";
-import ButUu from "@/components/ButUu.vue";
+import AtmUu from "@/components/uu/AtmUu.vue";
+import CoUu from "@/components/uu/CoUu.vue";
+import GvsUu from "@/components/uu/GvsUu.vue";
+import ButUu from "@/components/uu/ButUu.vue";
 export default {
   components: {
     AtmUu,
@@ -36,11 +34,13 @@ export default {
     ButUu
   },
   data() {
-    return {};
+    return {
+      ts: true
+    };
   },
   computed: {
     ...mapState({
-      no_proj: state => state.no_proj,
+      no_proj: state => state.no_proj_ts,
       np: state => state.np,
       state_uu: state => state.Uu,
       tipuu: state => state.Uu.gen.tipuu,
@@ -56,7 +56,6 @@ export default {
     },
     tipuu: {
       handler() {
-        console.log("tttttttttttttt");
         this.$store.dispatch("PROJ", this.nop());
       },
       deep: true

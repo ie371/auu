@@ -35,6 +35,7 @@
             item-value="val"
             label="Формула учета"
             hide-details
+            :disabled="no_fuco"
           ></v-select>
         </v-col>
       </v-row>
@@ -47,10 +48,9 @@
             dense
             label="Qco, Гкал/ч"
             class="inputD"
-            type="number"
             hide-details
             v-model.number="isx.qco"
-            step="0.1"
+            step="0.0000001"
             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
             maxlength="8"
           ></v-text-field>
@@ -297,6 +297,7 @@
           <v-select
             dense
             class="inputD"
+            :class="{'errs' : no_grz }"
             v-model.number="check.filo"
             :items="tip_filtr"
             item-text="text"
@@ -304,6 +305,7 @@
             label="Фильтр"
             hide-details
             :disabled="no_filter"
+            :append-icon="no_grz ? 'mdi-alert-rhombus-outline' : undefined"
           ></v-select>
         </v-col>
       </v-row>
@@ -316,9 +318,19 @@
             <v-switch
               dense
               class="inputD mt-0"
-              v-model.number="sx.sx_ot"
+              v-model.number="check.sx_ot"
               label="Подпитка"
-              color="deep-orange"
+              hide-details
+            ></v-switch>
+          </v-layout>
+        </v-col>
+        <v-col cols="6">
+          <v-layout align-center justify-center v-show="no_revers">
+            <v-switch
+              dense
+              class="inputD mt-0"
+              v-model.number="check.revers"
+              label="Реверс на Т2"
               hide-details
             ></v-switch>
           </v-layout>
@@ -326,7 +338,7 @@
       </v-row>
     </v-list-item>
     <!-- //////////////ПОДПИТКА////////////////////////////////////////// -->
-    <v-list-item dense v-show="sx.sx_ot">
+    <v-list-item dense v-show="check.sx_ot">
       <v-row align="center">
         <v-col cols="3">
           <v-text-field
@@ -352,7 +364,7 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="6" v-show="sx.sx_ot">
+        <v-col cols="6" v-show="check.sx_ot">
           <v-select
             dense
             class="inputD"
@@ -366,7 +378,7 @@
         </v-col>
       </v-row>
     </v-list-item>
-    <v-list-item dense v-show="sx.sx_ot">
+    <v-list-item dense v-show="check.sx_ot">
       <v-row align="center">
         <v-col cols="4">
           <v-select
@@ -451,7 +463,6 @@ export default {
       // no_pr: 1
     };
   },
-
   computed: {
     ...mapState({
       sx: state => state.Uu.sx,
@@ -501,18 +512,41 @@ export default {
       this.check.tipLo === "ml" ? (a = true) : (a = false);
       return a;
     },
+    no_grz() {
+      let a = false;
+      this.check.filo == 2 && this.du.dut1 < 33 ? (a = true) : (a = false);
+      return a;
+    },
+    no_fuco() {
+      let a = false;
+      this.sx.sx_otkr > 0 ? (a = true) : (a = false);
+      return a;
+    },
+    no_revers() {
+      let a = true;
+      this.sx.sx_otkr > 0 ? (a = true) : (a = false);
+      return a;
+    },
     no_pr() {
-      let a, b;
+      let a, b, c;
       this.no_mod ? (a = 1) : (a = 0);
       this.no_i6 ? (b = 1) : (b = 0);
-      return a + b;
+      this.no_grz ? (c = 1) : (c = 0);
+      return a + b + c;
     }
   },
   watch: {
     no_pr(val) {
       this.$store.dispatch({ type: "NP", ot: val });
     },
-
+    sx: {
+      handler(val) {
+        val.sx_otkr > 0
+          ? (this.check.fuCo = 1)
+          : ((this.check.fuCo = 0), (this.check.revers = 0));
+      },
+      deep: true
+    },
     check: {
       handler(val) {
         this.$store.dispatch("CHECK_CO", val);
@@ -536,7 +570,6 @@ export default {
         this.$store.dispatch("SX", this.sx);
         this.$store.dispatch("GEN_UU", this.gen);
         this.$store.dispatch("GIDR");
-        // this.$store.dispatch({ type: "NP", ot: this.no_pr });
       },
       deep: true
     },

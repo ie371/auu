@@ -10,7 +10,6 @@
           class="inputD mt-0"
           v-model.number="gen.IL"
           label="Измерительные линии"
-          color="deep-orange"
           hide-details
         ></v-switch>
       </v-layout>
@@ -18,7 +17,7 @@
 
     <v-list-item dense>
       <v-row align="center" justify="space-between" dense>
-        <v-col cols="12">
+        <v-col cols="8">
           <v-select
             dense
             class="inputD"
@@ -29,6 +28,16 @@
             label="Системный блок"
             hide-details
           ></v-select>
+        </v-col>
+        <v-col cols="4">
+          <v-text-field
+            dense
+            label="шифр"
+            class="inputD"
+            hide-details
+            v-model="atm.shifr_to"
+            :disabled="sb_to"
+          ></v-text-field>
         </v-col>
       </v-row>
     </v-list-item>
@@ -61,14 +70,13 @@
           class="inputD mt-0"
           v-model.number="atm.met_ruk"
           label="Металлорукав"
-          color="deep-orange"
           hide-details
         ></v-switch>
       </v-layout>
     </v-list-item>
 
     <v-list-item dense class="mt-3">
-      <v-row align="center" justify="space-between" dense>
+      <v-row align="center" dense>
         <v-col cols="4">
           <v-text-field
             dense
@@ -82,21 +90,11 @@
         <v-col cols="4">
           <v-text-field
             dense
-            label="СБ => ИМ ЦО"
+            label="СБ => ИМ ХВС"
             class="inputD"
             type="number"
             hide-details
             v-model="atm.lsbo"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="4">
-          <v-text-field
-            dense
-            label="СБ => ИМ ГВС"
-            class="inputD"
-            type="number"
-            hide-details
-            v-model="atm.lsbg"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -109,60 +107,16 @@
     </v-list-item>
 
     <v-list-item dense>
-      <v-row align="center" justify="space-between">
-        <v-col cols="6">
+      <v-row align="center">
+        <v-col cols="8">
           <v-select
             dense
             class="inputD"
-            v-model="atm.teploiz_ot"
+            v-model="atm.teploiz_hvs"
             :items="teploiz"
             item-text="text"
             item-value="val"
-            label="Теплоизол. ЦО"
-            hide-details
-          ></v-select>
-        </v-col>
-        <v-col cols="6">
-          <v-select
-            dense
-            class="inputD"
-            v-model="atm.teploiz_gvs"
-            :items="teploiz"
-            item-text="text"
-            item-value="val"
-            label="Теплоизол. ГВС"
-            hide-details
-          ></v-select>
-        </v-col>
-      </v-row>
-    </v-list-item>
-
-    <v-list-item dense>
-      <div>
-        <strong class="blue--text">Климатология</strong>
-      </div>
-    </v-list-item>
-
-    <v-list-item dense>
-      <v-row align="center" justify="space-between">
-        <v-col cols="6">
-          <v-select
-            dense
-            class="inputD"
-            :items="Regions"
-            item-text="text"
-            item-value="val"
-            label="Республика, край, область:"
-            hide-details
-          ></v-select>
-        </v-col>
-        <v-col cols="6">
-          <v-select
-            dense
-            class="inputD"
-            item-text="text"
-            item-value="val"
-            label="Населенный пункт:"
+            label="Теплоизоляция"
             hide-details
           ></v-select>
         </v-col>
@@ -182,24 +136,24 @@
             class="inputD"
             dense
             hide-details
-            name="princ_sx_uploads"
+            name="princ_sx_uploads_hvs"
             accept="image/*"
             multiple
+            prepend-icon="mdi-swap-horizontal"
             label="Принципиальная схема"
+            v-model="ps"
           ></v-file-input>
         </v-col>
 
         <v-col cols="4">
-          <v-select
+          <v-switch
             dense
-            class="inputD"
-            item-text="text"
-            item-value="val"
-            label="Формат:"
-            name="formatPRSX"
-            :items="format"
+            class="inputD mt-0"
+            v-model.number="atm.psA2"
+            label="A2"
             hide-details
-          ></v-select>
+            :disabled="no_ps"
+          ></v-switch>
         </v-col>
       </v-row>
     </v-list-item>
@@ -211,30 +165,31 @@
             class="inputD"
             dense
             hide-details
-            name="sitplan_uploads"
+            name="sitplan_uploads_hvs"
             accept="image/*"
             multiple
-            label="Принципиальная схема"
+            prepend-icon="mdi-mapbox"
+            label="Ситуационный план"
+            v-model="pl"
           ></v-file-input>
         </v-col>
 
         <v-col cols="4">
-          <v-select
+          <v-switch
             dense
-            class="inputD"
-            item-text="text"
-            item-value="val"
-            label="Формат:"
-            name="formatSitPl"
-            :items="format"
+            class="inputD mt-0"
+            v-model.number="atm.plA2"
+            label="A2"
             hide-details
-          ></v-select>
+            :disabled="no_pl"
+          ></v-switch>
         </v-col>
       </v-row>
     </v-list-item>
   </v-row>
 </template>
  <script>
+import Axios from "axios";
 import { mapState } from "vuex";
 import Regions from "@/utils/regions";
 export default {
@@ -243,7 +198,8 @@ export default {
       Regions,
       items_sb: [
         { text: "СБ-04 с блоком бесперебойного питания", val: 0 },
-        { text: "СБ-04 с сетевым питанием", val: 1 }
+        { text: "СБ-04 с сетевым питанием", val: 1 },
+        { text: "СБ-04 из проекта ТС", val: 2 }
       ],
       items_pltr: [
         { text: "GSM-модем", val: "gsm" },
@@ -254,42 +210,46 @@ export default {
         { text: "ДТА", val: "dta" }
       ],
       teploiz: [
-        { text: "Energoflex", val: 0 },
-        { text: "K-flex", val: 1 },
-        { text: "Цилиндры кашированные, 40мм", val: 2 }
+        { text: "нет", val: 0 },
+        { text: "Energoflex", val: 1 },
+        { text: "K-flex", val: 2 },
+        { text: "Цилиндры кашированные, 40мм", val: 3 }
       ],
-      format: [
-        { text: "А3", val: "A3" },
-        { text: "А2", val: "A2" }
-      ]
+      pl: [],
+      ps: [],
+      no_pl: true,
+      no_ps: true
     };
   },
 
   computed: {
     ...mapState({
-      gen: state => state.Uu.gen,
-      atm: state => state.Uu.atm
-      // check: state => state.Uu.check
-    })
+      gen: state => state.UuHvs.gen,
+      atm: state => state.UuHvs.atm
+    }),
+    sb_to() {
+      let a = true;
+      this.atm.tipSB != 2 ? (a = true) : (a = false);
+      return a;
+    }
   },
   watch: {
-    // check: {
-    //   handler() {
-    //     this.$store.dispatch("CHECK_UU", this.check);
-    //   },
-    //   deep: true
-    // },
-    // gen: {
-    //   handler() {
-    //     this.$store.dispatch("GEN_UU", this.gen);
-    //   },
-    //   deep: true
-    // },
     atm: {
       handler() {
-        this.$store.dispatch("ATM", this.atm);
+        this.atm.tipSB != 2 ? (this.atm.shifr_to = "") : "";
+        this.$store.dispatch("ATM_HVS", this.atm);
       },
       deep: true
+    },
+    pl(val) {
+      val.length === 0
+        ? ((this.atm.plA2 = false), (this.no_pl = true))
+        : (this.no_pl = false);
+    },
+    ps(val) {
+      val.length === 0
+        ? ((this.atm.psA2 = false), (this.no_ps = true))
+        : (this.no_ps = false);
     }
   },
   methods: {}

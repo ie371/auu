@@ -10,7 +10,7 @@
           </v-col>
           <v-spacer />
           <v-col cols="3">
-            <v-btn class="mt-0" dark color="blue" @click="openPDF">r3r7r1</v-btn>
+            <!-- <v-btn class="mt-0" dark color="blue" @click="openPDF">r3r7r1</v-btn> -->
           </v-col>
         </v-row>
       </v-list-item-content>
@@ -32,7 +32,16 @@
         </v-col>
 
         <v-col cols="2">
-          <v-select dense hide-details :items="DU" label="Ду" class="inputD" v-model="selected_du"></v-select>
+          <v-select
+            dense
+            hide-details
+            :items="DU"
+            label="Ду"
+            class="inputD"
+            item-text="text"
+            item-value="val"
+            v-model.number="selected_du"
+          ></v-select>
         </v-col>
         <v-col cols="2">
           <v-text-field
@@ -85,14 +94,13 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import axios from "axios";
+// import axios from "axios";
 import DU from "@/utils/du";
 import spectemplate from "@/utils/spectemplate";
 
 export default {
   data: () => ({
     DU,
-    dis_but: true,
     spectemplate,
     selected_eq: "",
     selected_du: "",
@@ -100,8 +108,8 @@ export default {
   }),
   computed: {
     ...mapState({
-      state_auu: state => state.Auu,
-      state_rekv: state => state.Rekv,
+      // state_auu: state => state.Auu,
+      // state_rekv: state => state.Rekv,
       spec: state => state.Auu.spec
     })
   },
@@ -110,9 +118,6 @@ export default {
     add_stand() {
       this.$store.dispatch("STAND");
     },
-    // remove_spec() {
-    //   this.$store.dispatch("SPEC_REM");
-    // },
     add_equip() {
       let eq = {
         text: this.selected_eq.text,
@@ -139,28 +144,6 @@ export default {
     remove_equip(i) {
       this.spec.splice(i, 1);
       this.$store.dispatch("SPEC", this.spec);
-    },
-    openPDF() {
-      let f = document.getElementById("formTS");
-      f.action = "./pdf/project/pr_auu.php";
-      let auu = JSON.stringify(this.state_auu);
-      let rekv = JSON.stringify(this.state_rekv);
-
-      let a = document.createElement("input");
-      a.hidden = true;
-      a.value = auu;
-      a.name = "A";
-      f.appendChild(a);
-
-      let r = document.createElement("input");
-      r.hidden = true;
-      r.value = rekv;
-      r.name = "R";
-      f.appendChild(r);
-
-      f.submit();
-      a.remove();
-      r.remove();
     }
   }
 };
